@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: '최신 정부 복지 정책 지원금 안내',
   verification: {
     other: {
-      "naver-site-verification": ["1ae5d630aa9d4d97076b358fd47bdf880df595f7"],
+      "naver-site-verification": ["af08f882eb6864711387eedb9eda95b25726d2ba"],
     },
   },
 }
