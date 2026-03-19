@@ -42,7 +42,7 @@ export default function PolicyList({ policies, title, description }: Props) {
             </header>
 
             {/* 검색창 영역 */}
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '3rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '3rem', width: '100%' }}>
                 <div style={{ position: 'relative', width: '100%', maxWidth: '500px' }}>
                     <input 
                         type="text" 
@@ -51,6 +51,7 @@ export default function PolicyList({ policies, title, description }: Props) {
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={{
                             width: '100%',
+                            boxSizing: 'border-box',
                             padding: '1rem 1.5rem',
                             fontSize: '1rem',
                             borderRadius: '9999px',
@@ -62,8 +63,8 @@ export default function PolicyList({ policies, title, description }: Props) {
                             transition: 'box-shadow 0.2s, border-color 0.2s',
                         }}
                     />
-                    <div style={{ position: 'absolute', right: '1.2rem', top: '1rem', color: '#9ca3af' }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <div style={{ position: 'absolute', right: '1.2rem', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', display: 'flex', alignItems: 'center' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     </div>
                 </div>
             </div>
@@ -74,7 +75,7 @@ export default function PolicyList({ policies, title, description }: Props) {
                     검색 결과가 없습니다. 다른 키워드로 검색해 보세요.
                 </div>
             ) : (
-                <div style={{ display: 'grid', gap: '1.5rem', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
+                <div style={{ display: 'grid', gap: '1.5rem', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
                     {filteredPolicies.map((policy) => (
                         <article key={policy.id} style={{ 
                             backgroundColor: '#ffffff', 

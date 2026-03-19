@@ -40,8 +40,13 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
+        <style dangerouslySetInnerHTML={{__html: `
+          *, *::before, *::after { box-sizing: border-box; }
+          body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; margin: 0; padding: 0; overflow-x: hidden; }
+          input, button, textarea, select { font: inherit; }
+        `}} />
       </head>
-      <body style={{ margin: 0, padding: 0, fontFamily: '"Pretendard Variable", -apple-system, sans-serif', backgroundColor: '#f9fafb', color: '#111827' }}>
+      <body style={{ fontFamily: '"Pretendard Variable", -apple-system, blinkmacsystemfont, system-ui, sans-serif', backgroundColor: '#f9fafb', color: '#111827' }}>
         
         {/* Navigation Menu (Modern, Bright, Sticky) */}
         <header style={{ 
