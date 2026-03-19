@@ -33,6 +33,22 @@ export default async function PolicyDetailPage({ params }: Props) {
         notFound();
     }
 
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: policy.title,
+      description: policy.description,
+      datePublished: policy.date_posted,
+      author: {
+        '@type': 'Organization',
+        name: '정부복지 알리미',
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: '정부복지 알리미',
+      }
+    };
+
     return (
         <article style={{ 
             maxWidth: '800px', 
@@ -45,6 +61,11 @@ export default async function PolicyDetailPage({ params }: Props) {
             color: '#374151', 
             lineHeight: '1.7' 
         }}>
+            {/* SEO 구조화 데이터(JSON-LD) 삽입 */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <nav style={{ marginBottom: '3rem' }}>
                 <Link href="/" style={{ 
                     color: '#6b7280', 

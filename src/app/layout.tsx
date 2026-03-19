@@ -20,6 +20,14 @@ export default async function RootLayout({
 }) {
   const categories = await getCategories();
 
+  const websiteJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: '정부복지 알리미',
+    url: 'https://gov-welfare.com',
+    description: '최신 정부 복지 정책 지원금 안내',
+  };
+
   return (
     <html lang="ko">
       <head>
@@ -28,6 +36,11 @@ export default async function RootLayout({
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8738602180421069" 
             crossOrigin="anonymous"
             strategy="afterInteractive"
+        />
+        {/* 전체 사이트용 구조화 데이터 뼈대 삽입 */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
       </head>
       <body style={{ margin: 0, padding: 0, fontFamily: '"Pretendard Variable", -apple-system, sans-serif', backgroundColor: '#f9fafb', color: '#111827' }}>
