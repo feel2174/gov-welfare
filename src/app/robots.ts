@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-    const baseUrl = 'https://gov-welfare.com';
+    const baseUrl = 'https://cloudplare.com';
     return {
         rules: {
             userAgent: '*',

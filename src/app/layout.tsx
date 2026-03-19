@@ -23,7 +23,7 @@ export default async function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: '정부복지 알리미',
-    url: 'https://gov-welfare.com',
+    url: 'https://cloudplare.com',
     description: '최신 정부 복지 정책 지원금 안내',
   };
 
