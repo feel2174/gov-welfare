@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import Script from 'next/script'
 import { getCategories } from '@/lib/policies'
 
 export const metadata: Metadata = {
@@ -31,12 +30,11 @@ export default async function RootLayout({
   return (
     <html lang="ko">
       <head>
-        <Script 
+        <script 
             async 
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8738602180421069" 
             crossOrigin="anonymous"
-            strategy="afterInteractive"
-        />
+        ></script>
         {/* 전체 사이트용 구조화 데이터 뼈대 삽입 */}
         <script
           type="application/ld+json"
