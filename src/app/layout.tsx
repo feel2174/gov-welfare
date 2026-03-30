@@ -74,6 +74,17 @@ export default async function RootLayout({
                         transition: 'background-color 0.2s, color 0.2s'
                     }}>전체보기</Link>
                     
+                    <Link href="/guide" style={{ 
+                        color: '#4b5563', 
+                        textDecoration: 'none', 
+                        padding: '0.5rem 1rem', 
+                        borderRadius: '9999px',
+                        fontSize: '0.9rem',
+                        fontWeight: '600',
+                        backgroundColor: '#f3f4f6',
+                        transition: 'background-color 0.2s, color 0.2s'
+                    }}>복지가이드</Link>
+                    
                     {categories.map(c => (
                         <Link key={c.slug} href={`/category/${c.slug}`} style={{ 
                             color: '#4b5563', 
@@ -96,9 +107,20 @@ export default async function RootLayout({
             {children}
         </main>
 
-        <footer style={{ backgroundColor: '#ffffff', padding: '3rem 1.5rem', textAlign: 'center', color: '#9ca3af', borderTop: '1px solid #f3f4f6', marginTop: '4rem' }}>
-            <p style={{ fontSize: '0.95rem', fontWeight: '500' }}>© 2026 정부 복지 안내 블로그.</p>
-            <p style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>이 사이트는 모의계산 및 정보 제공을 위해 작성되었으며, (구글 애드센스용 하단 영역)</p>
+        <footer style={{ backgroundColor: '#ffffff', padding: '4rem 1.5rem', textAlign: 'center', color: '#6b7280', borderTop: '1px solid #f3f4f6', marginTop: '6rem' }}>
+            <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+                <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap' }}>
+                    <Link href="/" style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>홈</Link>
+                    <Link href="/guide" style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>복지 가이드</Link>
+                    <Link href="/privacy" style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>개인정보처리방침</Link>
+                    <Link href="/terms" style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>이용약관</Link>
+                </div>
+                <p style={{ fontSize: '1rem', fontWeight: '700', color: '#1f2937', marginBottom: '0.5rem' }}>정부 복지 알리미</p>
+                <p style={{ fontSize: '0.85rem', lineHeight: '1.6', maxWidth: '600px', margin: '0 auto 1.5rem' }}>
+                    본 사이트는 정부 및 지방자치단체의 복지 정책 데이터를 바탕으로 유익한 정보를 공공의 이익을 위해 제공합니다. 공식적인 신청 및 모의 계산은 반드시 해당 주무 부처의 사이트에서 진행하시기 바랍니다.
+                </p>
+                <p style={{ fontSize: '0.85rem', color: '#9ca3af' }}>© 2026 정부 복지 정책 안내 블로그. All rights reserved.</p>
+            </div>
         </footer>
       </body>
     </html>

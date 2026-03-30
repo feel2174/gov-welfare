@@ -103,8 +103,35 @@ export default async function PolicyDetailPage({ params }: Props) {
             </header>
 
             <section style={{ marginBottom: '3rem' }}>
-                <h2 style={{ fontSize: '1.4rem', color: '#1f2937', marginBottom: '1.2rem', fontWeight: '800' }}>제도 개요</h2>
-                <p style={{ fontSize: '1.1rem', color: '#4b5563', backgroundColor: '#f9fafb', padding: '1.5rem', borderRadius: '12px' }}>{policy.description}</p>
+                <h2 style={{ fontSize: '1.4rem', color: '#1f2937', marginBottom: '1.2rem', fontWeight: '800' }}>📌 제도 개요 및 특징</h2>
+                <div style={{ fontSize: '1.1rem', color: '#4b5563', backgroundColor: '#f9fafb', padding: '1.8rem', borderRadius: '18px', borderLeft: '5px solid #2563eb' }}>
+                    <p style={{ marginBottom: '1rem' }}>{policy.description}</p>
+                    <p style={{ fontSize: '1rem', color: '#6b7280', fontStyle: 'italic' }}>
+                        * 본 제도는 {policy.category} 분야의 핵심적인 복지 사업으로, 해당 자격 요건을 충족할 경우 실질적인 가계 경제에 큰 보탬이 될 것으로 예상됩니다.
+                    </p>
+                </div>
+            </section>
+
+            <section style={{ marginBottom: '3.5rem' }}>
+                <h2 style={{ fontSize: '1.4rem', color: '#1f2937', marginBottom: '1.2rem', fontWeight: '800' }}>📋 상세 전문가 분석 (가이드)</h2>
+                <div style={{ padding: '0.5rem 0' }}>
+                    <h3 style={{ fontSize: '1.15rem', color: '#111827', fontWeight: '700', marginBottom: '0.8rem' }}>왜 이 정책이 중요한가요?</h3>
+                    <p style={{ marginBottom: '1.5rem', lineHeight: '1.7', color: '#4b5563' }}>
+                        정기적으로 시행되는 {policy.category} 지원금은 예산 소진 시 조기 마감될 수 있는 특성이 있습니다. 
+                        특히 "{policy.title}"의 경우 선정 기준이 매년 업데이트되므로, 본인의 소득 인정액이나 자격 요건을 정확히 파악하여 
+                        **우선 신청**하는 것이 가장 중요한 전략입니다.
+                    </p>
+                    
+                    <h3 style={{ fontSize: '1.15rem', color: '#111827', fontWeight: '700', marginBottom: '0.8rem' }}>꼭 확인해야 할 필수 체크리스트</h3>
+                    <ul style={{ listStyleType: 'none', paddingLeft: 0, color: '#4b5563' }}>
+                        <li style={{ marginBottom: '0.6rem', display: 'flex', gap: '0.5rem' }}>
+                            <span style={{ color: '#059669' }}>✔</span> 자격 요건에 부합하는 증빙 서류가 준비되었는가?
+                        </li>
+                        <li style={{ marginBottom: '0.6rem', display: 'flex', gap: '0.5rem' }}>
+                            <span style={{ color: '#059669' }}>✔</span> 온라인 신청 시 '복지로' 또는 '정부24' 로그인이 가능한가?
+                        </li>
+                    </ul>
+                </div>
             </section>
 
             <div style={{ backgroundColor: '#ffffff', padding: '2rem', borderRadius: '16px', border: '1px solid #e5e7eb', marginBottom: '3rem' }}>

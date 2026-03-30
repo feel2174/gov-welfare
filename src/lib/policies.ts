@@ -1,4 +1,5 @@
 import policiesData from '../data/policies.json';
+import guidesData from '../data/guides.json';
 
 export interface Policy {
     id: string;
@@ -10,6 +11,15 @@ export interface Policy {
     amount: string;
     application_url: string;
     date_posted: string;
+}
+
+export interface Guide {
+    id: string;
+    title: string;
+    description: string;
+    content: string;
+    date: string;
+    category: string;
 }
 
 export const getAllPolicies = async (): Promise<Policy[]> => {
@@ -32,4 +42,12 @@ export const getCategories = async () => {
         }
     });
     return Array.from(unique.entries()).map(([slug, name]) => ({ slug, name }));
+};
+// Guide related functions
+export const getAllGuides = async (): Promise<Guide[]> => {
+    return guidesData as Guide[];
+};
+
+export const getGuideById = async (id: string): Promise<Guide | undefined> => {
+    return (guidesData as Guide[]).find(guide => guide.id === id);
 };
