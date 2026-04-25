@@ -1,21 +1,43 @@
 import React from 'react';
 
-export const metadata = {
-    title: '이용약관 - 정부복지 알리미',
-};
+export const metadata = { title: '이용약관', description: '정부 복지 알리미 이용약관.' };
 
 export default function TermsOfService() {
+    const h2 = { fontSize: '1.1rem', fontWeight: '800' as const, color: 'var(--color-text)', marginTop: '2rem', marginBottom: '0.6rem' };
+    const p = { fontSize: '0.9rem', color: 'var(--color-text-secondary)', lineHeight: '1.8', marginBottom: '0.6rem' };
+
     return (
-        <article style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem', backgroundColor: '#fff', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
-            <h1 style={{ fontSize: '2rem', marginBottom: '1.5rem', borderBottom: '2px solid #f3f4f6', paddingBottom: '1rem' }}>이용약관 및 면책조항</h1>
-            <h2 style={{ marginTop: '2rem', fontSize: '1.2rem' }}>1. 목적</h2>
-            <p>본 약관은 ‘정부복지 알리미’에서 제공하는 정부 지원금, 정책 모음 등의 정보 제공 서비스의 이용에 대한 조건 및 절차, 책임 사항을 규정합니다.</p>
-            <h2 style={{ marginTop: '2rem', fontSize: '1.2rem' }}>2. 정보의 성격 및 면책사항</h2>
-            <p>본 사이트에서 제공하는 복지 정책, 지원 금액 등의 모든 내용은 정부와 지자체의 안내자료를 참고하여 작성되었으나, 시기에 따라 정책 변동이 있을 수 있으므로 단순 참고용으로만 활용되어야 합니다.</p>
-            <p>본 사이트는 제공된 정보로 인해 발생한 직·간접적인 손해에 대하여 법적 책임을 지지 않으며, 정확한 신청 자격 및 모의계산은 반드시 명시된 공식 홈페이지를 통해 확인하시기 바랍니다.</p>
-            <h2 style={{ marginTop: '2rem', fontSize: '1.2rem' }}>3. 저작권 및 무단 이용 금지</h2>
-            <p>본 사이트에 등록된 자체 가공 콘텐츠의 무단 복제 및 상업적 도용을 금합니다. 단, 각 정책의 원본 저작권은 각 정부 기관에 있습니다.</p>
-            <p style={{ marginTop: '2rem', color: '#6b7280', fontSize: '0.9rem' }}>시행일자: 2026.01.01</p>
+        <article style={{ backgroundColor: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', padding: '2rem 1.5rem', border: '1px solid var(--color-border)' }}>
+            <h1 style={{ fontSize: '1.6rem', fontWeight: '900', marginBottom: '0.4rem' }}>이용약관</h1>
+            <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', marginBottom: '2rem', paddingBottom: '1.5rem', borderBottom: '1px solid var(--color-border)' }}>시행일: 2026년 1월 1일</p>
+
+            <h2 style={h2}>제1조 (목적)</h2>
+            <p style={p}>본 약관은 정부 복지 알리미가 제공하는 정부 보조금 공공서비스 정보 검색 및 복지 가이드 콘텐츠 서비스의 이용 조건을 규정합니다.</p>
+
+            <h2 style={h2}>제2조 (서비스 내용)</h2>
+            <ul style={{ ...p, paddingLeft: '1.2rem' }}>
+                <li>공공데이터포털 정부24 API를 통한 보조금 정보 실시간 검색</li>
+                <li>복지 정책 가이드 콘텐츠 제공</li>
+                <li>각 정부 기관 공식 사이트로의 연결</li>
+            </ul>
+
+            <h2 style={h2}>제3조 (면책사항)</h2>
+            <p style={p}>본 사이트의 정보는 공공 API를 통해 수집된 참고용 정보입니다. 정확한 자격 확인과 신청은 반드시 해당 기관 공식 사이트를 이용하세요. 데이터의 정확성, 최신성에 대한 법적 책임을 지지 않습니다.</p>
+
+            <h2 style={h2}>제4조 (저작권)</h2>
+            <p style={p}>가이드 콘텐츠, 디자인 등 자체 제작 저작물의 무단 복제 및 상업적 이용을 금합니다. 공공 API 데이터의 원본 저작권은 각 정부 기관에 귀속됩니다.</p>
+
+            <h2 style={h2}>제5조 (광고)</h2>
+            <p style={p}>운영 비용 충당을 위해 Google AdSense 등 디스플레이 광고를 게재할 수 있습니다.</p>
+
+            <h2 style={h2}>제6조 (약관 변경)</h2>
+            <p style={p}>본 약관은 관련 법령이나 서비스 정책 변경에 따라 수정될 수 있으며, 변경 시 본 페이지를 통해 공고합니다.</p>
+
+            <div style={{ marginTop: '2.5rem', padding: '1rem 1.2rem', backgroundColor: '#f8fafc', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-border)' }}>
+                <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', lineHeight: '1.7' }}>
+                    <strong>문의:</strong> eagles8795@gmail.com<br /><strong>시행일:</strong> 2026년 1월 1일
+                </p>
+            </div>
         </article>
     );
 }

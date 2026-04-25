@@ -1,73 +1,83 @@
-import { getAllPolicies, getAllGuides } from '@/lib/policies';
-import PolicyList from '@/components/PolicyList';
+import ServiceList from '@/components/ServiceList';
+import { getAllGuides } from '@/lib/policies';
 import Link from 'next/link';
 
 export const metadata = {
-    title: '정부 복지 알리미 - 2026 정부 정책 통합 검색',
-    description: '최신 정부 복지 정책 모음, 지원금 가이드 및 카테고리별 맞춤형 안내 서비스',
+    title: '정부 복지 알리미 - 대한민국 보조금 실시간 통합검색',
+    description: '정부24 공공서비스 API 기반 전국 10,000건 이상 정부 보조금·지원금 실시간 통합검색 서비스.',
 };
 
-// 메인 페이지: 전체보기 (최신 100개)
 export default async function Home() {
-    const policies = await getAllPolicies();
     const guides = await getAllGuides();
 
     return (
         <div>
-            {/* Featured Guides (Highlighting Value for AdSense) */}
-            <section style={{ marginBottom: '5rem' }}>
-                <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+            {/* 실시간 공공서비스 검색 (핵심 콘텐츠) */}
+            <ServiceList />
+
+            {/* 복지 가이드 섹션 (독창적 콘텐츠) */}
+            <section style={{ marginTop: '3rem' }}>
+                <header style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end',
+                    marginBottom: '1.2rem',
+                }}>
                     <div>
-                        <h2 style={{ fontSize: '1.8rem', fontWeight: '900', color: '#111827', marginBottom: '0.4rem' }}>실전 복지 가이드 ⚡️</h2>
-                        <p style={{ color: '#6b7280', fontSize: '1rem' }}>놓치면 손해 보는 정부 지원금 핵심 정리</p>
+                        <h2 style={{ fontSize: '1.4rem', fontWeight: '900', color: 'var(--color-text)', marginBottom: '0.2rem' }}>
+                            복지 가이드 ⚡️
+                        </h2>
+                        <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>놓치면 손해! 전문가 핵심 정리</p>
                     </div>
-                    <Link href="/guide" style={{ color: '#2563eb', fontWeight: '700', textDecoration: 'none', fontSize: '0.95rem' }}>전체 가이드 보기 &rarr;</Link>
+                    <Link href="/guide" style={{
+                        color: 'var(--color-primary)', fontWeight: '700',
+                        fontSize: '0.85rem',
+                    }}>
+                        전체보기 →
+                    </Link>
                 </header>
 
-                <div style={{ display: 'grid', gap: '1.5rem', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
-                    {guides.slice(0, 2).map((guide) => (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                    {guides.map((guide) => (
                         <Link key={guide.id} href={`/guide/${guide.id}`} style={{ textDecoration: 'none' }}>
-                            <article style={{ 
-                                padding: '2rem', 
-                                backgroundColor: '#ffffff', 
-                                borderRadius: '24px', 
-                                border: '1px solid #f3f4f6', 
-                                height: '100%',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
-                                transition: 'transform 0.2s, box-shadow 0.2s',
-                                cursor: 'pointer'
-                            }}
-                            className="guide-home-card"
-                            >
-                                <span style={{ color: '#2563eb', fontWeight: '800', fontSize: '0.8rem', marginBottom: '0.8rem', display: 'block', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                    {guide.category}
-                                </span>
-                                <h3 style={{ fontSize: '1.3rem', fontWeight: '800', color: '#111827', marginBottom: '1rem', lineHeight: '1.4' }}>
+                            <article className="guide-card" style={{
+                                padding: '1.4rem 1.5rem',
+                                backgroundColor: 'var(--color-surface)',
+                                borderRadius: 'var(--radius-md)',
+                                border: '1px solid var(--color-border)',
+                                transition: 'transform 0.2s, box-shadow 0.2s, border-color 0.2s',
+                            }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                    <span style={{
+                                        backgroundColor: '#fdf2f8', color: '#be185d',
+                                        padding: '0.2rem 0.6rem', borderRadius: '6px',
+                                        fontSize: '0.72rem', fontWeight: '700',
+                                    }}>
+                                        {guide.category}
+                                    </span>
+                                    <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{guide.date}</span>
+                                </div>
+                                <h3 style={{
+                                    fontSize: '1.05rem', fontWeight: '800',
+                                    color: 'var(--color-text)', lineHeight: 1.4,
+                                    marginBottom: '0.4rem',
+                                }}>
                                     {guide.title}
                                 </h3>
-                                <p style={{ color: '#4b5563', fontSize: '0.95rem', lineHeight: '1.6', flexGrow: 1 }}>{guide.description}</p>
-                                <div style={{ marginTop: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#6b7280', fontSize: '0.85rem', fontWeight: '600' }}>
-                                    <span>자세히 읽기</span>
-                                    <span>&rarr;</span>
-                                </div>
+                                <p style={{
+                                    fontSize: '0.88rem', color: 'var(--color-text-secondary)',
+                                    lineHeight: 1.6,
+                                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden',
+                                }}>
+                                    {guide.description}
+                                </p>
                             </article>
                         </Link>
                     ))}
                 </div>
             </section>
 
-            <hr style={{ border: 0, borderTop: '1px solid #e5e7eb', margin: '5rem 0' }} />
-
-            <PolicyList 
-                policies={policies} 
-                title="정부 정책 통합검색" 
-                description="나에게 찰떡같이 맞는 정부 지원금을 조회해보세요." 
-            />
-
             <style dangerouslySetInnerHTML={{ __html: `
-                .guide-home-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+                .guide-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -4px rgba(0,0,0,0.08); border-color: var(--color-border-hover) !important; }
             `}} />
         </div>
     );
