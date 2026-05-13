@@ -20,6 +20,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
         title: guide.title,
         description: guide.description,
+        openGraph: {
+            title: guide.title,
+            description: guide.description,
+            type: 'article',
+            publishedTime: guide.date,
+            url: `https://cloudplare.com/guide/${id}`,
+            siteName: '정부복지 알리미',
+        },
+        alternates: {
+            canonical: `https://cloudplare.com/guide/${id}`,
+        },
     };
 }
 
