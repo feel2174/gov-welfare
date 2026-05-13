@@ -86,6 +86,11 @@ export default async function GuideDetailPage({ params }: Props) {
                         ul: ({node, ...props}) => <ul style={{ marginBottom: '1.2rem', paddingLeft: '1.5rem', listStyleType: 'disc', color: '#4b5563' }} {...props} />,
                         li: ({node, ...props}) => <li style={{ marginBottom: '0.5rem' }} {...props} />,
                         strong: ({node, ...props}) => <strong style={{ fontWeight: '700', color: '#111827' }} {...props} />,
+                        img: ({node, ...props}) => (
+                            <span style={{ display: 'block', margin: '2rem 0', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--color-border)' }}>
+                                <img style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }} {...props} loading="lazy" />
+                            </span>
+                        ),
                     }}
                 >
                     {guide.content}
