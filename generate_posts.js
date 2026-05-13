@@ -2,7 +2,7 @@ const fs = require('fs');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'AIzaSyBoguQbPvluAposeQzqvv9BIMnHjj_s5Io');
-const model = genAI.getGenerativeModel({ model: 'gemini-1.0-pro' });
+const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-live-preview' });
 
 const topics = [
   { id: 'k-pass-2026', title: '2026년 K-패스 (K-Pass) 교통비 환급 가이드: 신청부터 혜택까지 완벽 정리', category: '생활안정' },
