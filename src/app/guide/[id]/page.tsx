@@ -2,6 +2,7 @@ import { getGuideById, getAllGuides } from '@/lib/policies';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import ReactMarkdown from 'react-markdown';
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -76,8 +77,19 @@ export default async function GuideDetailPage({ params }: Props) {
                 </p>
             </header>
 
-            <div style={{ fontSize: '0.95rem', color: 'var(--color-text-secondary)', whiteSpace: 'pre-wrap' }}>
-                {guide.content}
+            <div style={{ fontSize: '1rem', color: 'var(--color-text-secondary)', lineHeight: '1.8' }} className="markdown-content">
+                <ReactMarkdown
+                    components={{
+                        h2: ({node, ...props}) => <h2 style={{ fontSize: '1.25rem', fontWeight: '800', marginTop: '2rem', marginBottom: '1rem', color: '#1f2937' }} {...props} />,
+                        h3: ({node, ...props}) => <h3 style={{ fontSize: '1.1rem', fontWeight: '700', marginTop: '1.5rem', marginBottom: '0.8rem', color: '#374151' }} {...props} />,
+                        p: ({node, ...props}) => <p style={{ marginBottom: '1.2rem', color: '#4b5563' }} {...props} />,
+                        ul: ({node, ...props}) => <ul style={{ marginBottom: '1.2rem', paddingLeft: '1.5rem', listStyleType: 'disc', color: '#4b5563' }} {...props} />,
+                        li: ({node, ...props}) => <li style={{ marginBottom: '0.5rem' }} {...props} />,
+                        strong: ({node, ...props}) => <strong style={{ fontWeight: '700', color: '#111827' }} {...props} />,
+                    }}
+                >
+                    {guide.content}
+                </ReactMarkdown>
             </div>
 
             <div style={{
