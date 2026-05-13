@@ -19,7 +19,6 @@ export const metadata: Metadata = {
     description: '전국 10,000건 이상의 정부 복지 서비스를 한눈에 검색하세요.',
   },
   verification: {
-    google: 'YOUR_GOOGLE_VERIFICATION_CODE',
     other: {
       "naver-site-verification": ["af08f882eb6864711387eedb9eda95b25726d2ba"],
       "google-adsense-account": ["ca-pub-8738602180421069"],
