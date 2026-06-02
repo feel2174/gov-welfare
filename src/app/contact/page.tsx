@@ -22,13 +22,16 @@ export default function ContactPage() {
                     <span style={{ fontSize: '1.3rem' }}>✉️</span>
                     <div>
                         <p style={{ fontSize: '1rem', fontWeight: '800', color: 'var(--color-primary)' }}>eagles8795@gmail.com</p>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '0.2rem' }}>평일 기준 24시간 이내 답변드립니다.</p>
+                        <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '0.2rem' }}>오류 신고와 정정 요청을 확인 후 순차적으로 답변드립니다.</p>
                     </div>
                 </div>
             </section>
 
             <section style={{ marginBottom: '2.5rem' }}>
                 <h2 style={{ fontSize: '1.15rem', fontWeight: '800', marginBottom: '1rem' }}>💬 빠른 문의 양식</h2>
+                <p style={{ fontSize: '0.84rem', color: 'var(--color-text-secondary)', lineHeight: 1.7, marginBottom: '1rem' }}>
+                    아래 양식은 사용 중인 메일 앱을 열어 전송합니다. 메일 앱이 열리지 않으면 위 이메일 주소로 직접 보내주세요.
+                </p>
                 <form action="mailto:eagles8795@gmail.com" method="post" encType="text/plain">
                     <div style={{ marginBottom: '1rem' }}>
                         <label style={label}>이름 또는 닉네임</label>
@@ -63,6 +66,7 @@ export default function ContactPage() {
                 <ul style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', lineHeight: '1.8', paddingLeft: '1.2rem' }}>
                     <li>본 사이트는 정부 기관이 아닙니다. 개별 정책의 자격 요건이나 신청 관련 문의는 해당 기관에 직접 문의해 주세요.</li>
                     <li>데이터 오류 발견 시 신고해주시면 공공데이터포털 측에 전달하겠습니다.</li>
+                    <li>금액, 신청 기간, 선정 기준은 제도 변경에 따라 달라질 수 있어 공식 신청 화면 확인이 필요합니다.</li>
                 </ul>
             </section>
         </article>

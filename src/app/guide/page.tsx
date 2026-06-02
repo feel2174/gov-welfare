@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata = {
     title: '복지 가이드',
-    description: '복잡한 정부 복지 정책을 알기 쉽게 풀어서 설명합니다.',
+    description: '2026년 5월 기준 공식 출처와 함께 정리한 복지 제도별 신청 안내입니다.',
 };
 
 export default async function GuidePage() {
@@ -12,8 +12,14 @@ export default async function GuidePage() {
     return (
         <div>
             <header style={{ marginBottom: '2rem' }}>
-                <h1 style={{ fontSize: '1.6rem', fontWeight: '900', marginBottom: '0.3rem' }}>복지 혜택 가이드 📚</h1>
-                <p style={{ fontSize: '0.92rem', color: 'var(--color-text-secondary)' }}>정부 지원금을 더 똑똑하게 수령하는 방법을 안내합니다.</p>
+                <p style={{ fontSize: '0.78rem', color: 'var(--color-primary)', fontWeight: 800, marginBottom: '0.35rem' }}>
+                    2026년 5월 기준
+                </p>
+                <h1 style={{ fontSize: '1.6rem', fontWeight: '900', marginBottom: '0.45rem' }}>복지 제도별 신청 가이드</h1>
+                <p style={{ fontSize: '0.92rem', color: 'var(--color-text-secondary)', lineHeight: 1.7 }}>
+                    공식 안내를 바탕으로 대상 요건, 신청 경로, 확인해야 할 주의사항을 정리했습니다.
+                    실제 신청 가능 여부와 최종 선정은 각 기관의 공식 신청 화면에서 확인해야 합니다.
+                </p>
             </header>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                 {guides.map((guide) => (

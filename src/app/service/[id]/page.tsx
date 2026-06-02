@@ -1,43 +1,35 @@
-'use client';
-
-import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
+import { formatGovDate, getServiceDetail } from '@/lib/gov24';
+import { SITE_URL, SITE_NAME } from '@/lib/site';
 
-interface ServiceDetail {
-    서비스ID: string;
-    서비스명: string;
-    서비스목적: string;
-    지원대상: string;
-    선정기준: string;
-    지원내용: string;
-    신청방법: string;
-    신청기한: string;
-    구비서류: string;
-    접수기관명: string;
-    문의처: string;
-    온라인신청사이트URL: string;
-    소관기관명: string;
-    수정일시: string;
-    지원유형: string;
-    법령: string;
-    자치법규: string;
-    행정규칙: string;
+interface Props {
+    params: Promise<{ id: string }>;
 }
 
-// 줄바꿈 렌더링
+function cleanText(text: string | null | undefined) {
+    return (text || '').replace(/\\r\\n|\\r|\\n/g, '\n').trim();
+}
+
 function FormatText({ text }: { text: string | null | undefined }) {
-    if (!text) return <span style={{ color: 'var(--color-text-muted)' }}>정보 없음</span>;
+    const value = cleanText(text);
+    if (!value) return <span style={{ color: 'var(--color-text-muted)' }}>공공데이터에 세부 정보가 등록되지 않았습니다.</span>;
+
     return (
         <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'keep-all' }}>
-            {text.replace(/\\r\\n|\\r|\\n/g, '\n').split('\n').map((line, i) => (
-                <React.Fragment key={i}>{line}{i < text.split('\n').length - 1 && <br />}</React.Fragment>
+            {value.split('\n').map((line, index, lines) => (
+                <span key={`${line}-${index}`}>
+                    {line}
+                    {index < lines.length - 1 && <br />}
+                </span>
             ))}
         </div>
     );
 }
 
-function InfoSection({ icon, title, children }: { icon: string; title: string; children: React.ReactNode }) {
+function InfoSection({ title, children }: { title: string; children: ReactNode }) {
     return (
         <section style={{
             marginBottom: '1.2rem',
@@ -51,11 +43,10 @@ function InfoSection({ icon, title, children }: { icon: string; title: string; c
                 padding: '0.8rem 1.2rem',
                 backgroundColor: '#f8fafc',
                 borderBottom: '1px solid var(--color-border)',
-                display: 'flex', alignItems: 'center', gap: '0.4rem',
                 color: 'var(--color-text)',
                 margin: 0,
             }}>
-                <span>{icon}</span> {title}
+                {title}
             </h2>
             <div style={{
                 padding: '1rem 1.2rem',
@@ -69,71 +60,63 @@ function InfoSection({ icon, title, children }: { icon: string; title: string; c
     );
 }
 
-export default function ServiceDetailPage() {
-    const params = useParams();
-    const id = params.id as string;
-    const [detail, setDetail] = useState<ServiceDetail | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { id } = await params;
 
-    useEffect(() => {
-        async function fetchDetail() {
-            setLoading(true);
-            try {
-                const res = await fetch(`/api/services/${id}?serviceId=${id}`);
-                if (!res.ok) throw new Error('API 오류');
-                const json = await res.json();
-                if (json.data && json.data.length > 0) {
-                    setDetail(json.data[0]);
-                } else {
-                    setError('해당 서비스를 찾을 수 없습니다.');
-                }
-            } catch {
-                setError('데이터를 불러오지 못했습니다.');
-            } finally {
-                setLoading(false);
-            }
-        }
-        if (id) fetchDetail();
-    }, [id]);
+    try {
+        const detail = await getServiceDetail(id);
+        if (!detail) return { title: '공공서비스 정보를 찾을 수 없습니다.' };
 
-    if (loading) {
-        return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '5rem 0' }}>
-                <div className="spinner" />
-                <style dangerouslySetInnerHTML={{ __html: `
-                    .spinner { width: 36px; height: 36px; border: 3px solid #e5e7eb; border-top-color: var(--color-primary); border-radius: 50%; animation: spin 0.7s linear infinite; }
-                    @keyframes spin { to { transform: rotate(360deg); } }
-                `}} />
-            </div>
-        );
+        const description = cleanText(detail.서비스목적 || detail.지원내용).slice(0, 150);
+
+        return {
+            title: detail.서비스명,
+            description,
+            robots: {
+                index: false,
+                follow: true,
+            },
+            openGraph: {
+                title: detail.서비스명,
+                description,
+                type: 'article',
+                url: `${SITE_URL}/service/${id}`,
+                siteName: SITE_NAME,
+            },
+            alternates: {
+                canonical: `${SITE_URL}/service/${id}`,
+            },
+        };
+    } catch {
+        return {
+            title: '공공서비스 정보',
+            description: '정부24 공공데이터 기반 복지 서비스 상세 정보입니다.',
+            robots: {
+                index: false,
+                follow: true,
+            },
+        };
     }
+}
 
-    if (error || !detail) {
-        return (
-            <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
-                <p style={{ fontSize: '2rem', marginBottom: '1rem' }}>😢</p>
-                <p style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--color-text-secondary)' }}>{error || '서비스를 찾을 수 없습니다.'}</p>
-                <Link href="/" style={{
-                    display: 'inline-block', marginTop: '1.5rem',
-                    backgroundColor: 'var(--color-primary)', color: '#fff',
-                    padding: '0.7rem 1.5rem', borderRadius: '10px',
-                    fontWeight: '700', fontSize: '0.88rem',
-                }}>
-                    홈으로 돌아가기
-                </Link>
-            </div>
-        );
-    }
+export default async function ServiceDetailPage({ params }: Props) {
+    const { id } = await params;
+    const detail = await getServiceDetail(id);
+
+    if (!detail) notFound();
 
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'GovernmentService',
         name: detail.서비스명,
-        description: detail.서비스목적,
+        description: cleanText(detail.서비스목적),
         provider: { '@type': 'GovernmentOrganization', name: detail.소관기관명 },
         serviceType: detail.지원유형,
+        areaServed: 'KR',
+        url: `${SITE_URL}/service/${id}`,
     };
+
+    const sourceUrl = detail.상세조회URL || detail.온라인신청사이트URL;
 
     return (
         <article>
@@ -142,7 +125,6 @@ export default function ServiceDetailPage() {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
 
-            {/* 뒤로가기 */}
             <nav style={{ marginBottom: '1rem' }}>
                 <Link href="/" style={{
                     color: 'var(--color-text-secondary)', fontWeight: '700',
@@ -152,7 +134,6 @@ export default function ServiceDetailPage() {
                 </Link>
             </nav>
 
-            {/* 헤더 */}
             <header style={{
                 backgroundColor: 'var(--color-surface)',
                 borderRadius: 'var(--radius-lg)',
@@ -166,7 +147,7 @@ export default function ServiceDetailPage() {
                         padding: '0.2rem 0.6rem', borderRadius: '6px',
                         fontSize: '0.72rem', fontWeight: '700',
                     }}>
-                        {detail.소관기관명}
+                        {detail.소관기관명 || '소관기관 정보 없음'}
                     </span>
                     {detail.지원유형 && (
                         <span style={{
@@ -200,17 +181,19 @@ export default function ServiceDetailPage() {
                     fontSize: '0.9rem', color: 'var(--color-text-secondary)',
                     lineHeight: 1.7,
                 }}>
-                    {detail.서비스목적}
+                    {cleanText(detail.서비스목적) || '정부24 공공데이터에서 제공하는 공공서비스 상세 정보입니다.'}
                 </p>
 
-                {detail.수정일시 && (
-                    <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '0.8rem' }}>
-                        최종 수정: {detail.수정일시}
+                <div style={{ marginTop: '1rem', padding: '0.9rem 1rem', backgroundColor: '#f8fafc', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)' }}>
+                    <p style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', lineHeight: 1.7 }}>
+                        데이터 출처: 공공데이터포털 정부24 공공서비스 API
+                        {detail.수정일시 && <> · 공공데이터 수정일: {formatGovDate(detail.수정일시)}</>}
+                        <br />
+                        이 API 상세 페이지는 검색 보조용 참고 정보입니다. 자격과 신청 가능 여부는 소관기관의 최신 공고와 공식 신청 화면에서 다시 확인해 주세요.
                     </p>
-                )}
+                </div>
             </header>
 
-            {/* CTA 버튼 */}
             {detail.온라인신청사이트URL && (
                 <a
                     href={detail.온라인신청사이트URL}
@@ -225,39 +208,39 @@ export default function ServiceDetailPage() {
                         boxShadow: '0 4px 12px rgba(37,99,235,0.25)',
                     }}
                 >
-                    온라인 신청 바로가기
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
-                    </svg>
+                    공식 신청 화면 열기
                 </a>
             )}
 
-            {/* 상세 정보 섹션들 */}
-            <InfoSection icon="🎯" title="지원 대상">
+            <InfoSection title="지원 대상">
                 <FormatText text={detail.지원대상} />
             </InfoSection>
 
-            <InfoSection icon="📋" title="선정 기준">
+            <InfoSection title="선정 기준">
                 <FormatText text={detail.선정기준} />
             </InfoSection>
 
-            <InfoSection icon="💰" title="지원 내용">
+            <InfoSection title="지원 내용">
                 <FormatText text={detail.지원내용} />
             </InfoSection>
 
-            <InfoSection icon="📝" title="신청 방법">
+            <InfoSection title="신청 방법">
                 <FormatText text={detail.신청방법} />
             </InfoSection>
 
-            <InfoSection icon="📎" title="구비 서류">
+            <InfoSection title="신청 기한">
+                <FormatText text={detail.신청기한} />
+            </InfoSection>
+
+            <InfoSection title="구비 서류">
                 <FormatText text={detail.구비서류} />
             </InfoSection>
 
             {detail.문의처 && (
-                <InfoSection icon="📞" title="문의처">
+                <InfoSection title="문의처">
                     <div>
-                        {detail.문의처.split('||').map((contact, i) => (
-                            <p key={i} style={{ marginBottom: i < detail.문의처.split('||').length - 1 ? '0.3rem' : 0 }}>
+                        {detail.문의처.split('||').map((contact, index) => (
+                            <p key={`${contact}-${index}`} style={{ marginBottom: index < detail.문의처.split('||').length - 1 ? '0.3rem' : 0 }}>
                                 {contact.trim()}
                             </p>
                         ))}
@@ -266,37 +249,38 @@ export default function ServiceDetailPage() {
             )}
 
             {detail.접수기관명 && (
-                <InfoSection icon="🏢" title="접수 기관">
+                <InfoSection title="접수 기관">
                     <p>{detail.접수기관명}</p>
                 </InfoSection>
             )}
 
             {(detail.법령 || detail.자치법규 || detail.행정규칙) && (
-                <InfoSection icon="⚖️" title="관련 법령">
+                <InfoSection title="관련 법령 및 규정">
                     {detail.법령 && <p style={{ marginBottom: '0.3rem' }}><strong>법령:</strong> {detail.법령.replace(/\|\|/g, ', ')}</p>}
                     {detail.자치법규 && <p style={{ marginBottom: '0.3rem' }}><strong>자치법규:</strong> {detail.자치법규}</p>}
                     {detail.행정규칙 && <p><strong>행정규칙:</strong> {detail.행정규칙}</p>}
                 </InfoSection>
             )}
 
-            {/* 하단 CTA */}
             <div style={{
                 marginTop: '1.5rem', padding: '1.5rem',
                 backgroundColor: '#f8fafc', borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--color-border)', textAlign: 'center',
+                border: '1px solid var(--color-border)',
             }}>
-                <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '1rem', lineHeight: 1.6 }}>
-                    위 정보는 공공데이터포털 정부24 API를 통해 제공됩니다.<br />
-                    정확한 자격 확인은 공식 사이트에서 진행해주세요.
+                <h2 style={{ fontSize: '1rem', fontWeight: '800', marginBottom: '0.6rem' }}>공식 정보 확인</h2>
+                <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: sourceUrl ? '1rem' : 0, lineHeight: 1.7 }}>
+                    이 페이지는 공공데이터 API를 읽기 쉽게 정리한 참고용 정보입니다. 실제 신청, 자격 심사, 제출 서류는 소관기관의 공식 안내가 우선합니다.
                 </p>
-                <Link href="/" style={{
-                    display: 'inline-block',
-                    backgroundColor: 'var(--color-text)', color: '#fff',
-                    padding: '0.7rem 1.5rem', borderRadius: '10px',
-                    fontWeight: '700', fontSize: '0.85rem',
-                }}>
-                    ← 다른 보조금 검색하기
-                </Link>
+                {sourceUrl && (
+                    <a href={sourceUrl} target="_blank" rel="noopener noreferrer" style={{
+                        display: 'inline-block',
+                        backgroundColor: 'var(--color-text)', color: '#fff',
+                        padding: '0.7rem 1.2rem', borderRadius: '10px',
+                        fontWeight: '700', fontSize: '0.85rem',
+                    }}>
+                        공식 안내 확인하기
+                    </a>
+                )}
             </div>
         </article>
     );

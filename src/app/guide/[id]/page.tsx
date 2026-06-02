@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Metadata } from 'next';
 import ReactMarkdown from 'react-markdown';
+import { SITE_URL, SITE_NAME } from '@/lib/site';
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -20,16 +21,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
         title: guide.title,
         description: guide.description,
-        openGraph: {
-            title: guide.title,
-            description: guide.description,
-            type: 'article',
-            publishedTime: guide.date,
-            url: `https://cloudplare.com/guide/${id}`,
-            siteName: '정부복지 알리미',
+            openGraph: {
+                title: guide.title,
+                description: guide.description,
+                type: 'article',
+                publishedTime: guide.date,
+            url: `${SITE_URL}/guide/${id}`,
+            siteName: SITE_NAME,
         },
         alternates: {
-            canonical: `https://cloudplare.com/guide/${id}`,
+            canonical: `${SITE_URL}/guide/${id}`,
         },
     };
 }
@@ -46,9 +47,11 @@ export default async function GuideDetailPage({ params }: Props) {
         headline: guide.title,
         description: guide.description,
         datePublished: guide.date,
-        author: { '@type': 'Organization', name: '정부복지 알리미' },
-        publisher: { '@type': 'Organization', name: '정부복지 알리미' },
+        dateModified: guide.reviewedAt,
+        author: { '@type': 'Organization', name: SITE_NAME },
+        publisher: { '@type': 'Organization', name: SITE_NAME },
     };
+    const contentWithoutRandomImages = guide.content.replace(/!\[[^\]]*\]\(https:\/\/picsum\.photos\/[^)]+\)\n*/g, '');
 
     return (
         <article style={{
@@ -84,27 +87,65 @@ export default async function GuideDetailPage({ params }: Props) {
                     {guide.title}
                 </h1>
                 <p style={{ color: 'var(--color-text-muted)', fontSize: '0.82rem' }}>
-                    복지 전문 필진 · {guide.date}
+                    정부 복지 알리미 편집팀 · 최초 작성 {guide.date} · 최종 검토 {guide.reviewedAt}
                 </p>
             </header>
+
+            <section style={{
+                marginBottom: '2rem',
+                padding: '1rem 1.1rem',
+                backgroundColor: '#f8fafc',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-md)',
+            }}>
+                <h2 style={{ fontSize: '0.95rem', fontWeight: '800', marginBottom: '0.5rem', color: 'var(--color-text)' }}>공식 확인 출처</h2>
+                <p style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)', lineHeight: 1.7, marginBottom: '0.7rem' }}>
+                    아래 내용은 2026년 5월 기준으로 공공기관 안내와 공식 신청 페이지를 확인해 정리한 참고 정보입니다. 실제 신청 가능 여부, 소득·재산 기준, 신청 기간은 공식 사이트의 최신 공고를 우선 확인해 주세요.
+                </p>
+                <ul style={{ paddingLeft: '1.1rem', color: 'var(--color-text-secondary)', fontSize: '0.82rem', lineHeight: 1.8 }}>
+                    {guide.sources?.map((source) => (
+                        <li key={source.url}>
+                            <a href={source.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', fontWeight: '700' }}>{source.title}</a>
+                        </li>
+                    ))}
+                </ul>
+            </section>
 
             <div style={{ fontSize: '1rem', color: 'var(--color-text-secondary)', lineHeight: '1.8' }} className="markdown-content">
                 <ReactMarkdown
                     components={{
-                        h2: ({node, ...props}) => <h2 style={{ fontSize: '1.25rem', fontWeight: '800', marginTop: '2rem', marginBottom: '1rem', color: '#1f2937' }} {...props} />,
-                        h3: ({node, ...props}) => <h3 style={{ fontSize: '1.1rem', fontWeight: '700', marginTop: '1.5rem', marginBottom: '0.8rem', color: '#374151' }} {...props} />,
-                        p: ({node, ...props}) => <p style={{ marginBottom: '1.2rem', color: '#4b5563' }} {...props} />,
-                        ul: ({node, ...props}) => <ul style={{ marginBottom: '1.2rem', paddingLeft: '1.5rem', listStyleType: 'disc', color: '#4b5563' }} {...props} />,
-                        li: ({node, ...props}) => <li style={{ marginBottom: '0.5rem' }} {...props} />,
-                        strong: ({node, ...props}) => <strong style={{ fontWeight: '700', color: '#111827' }} {...props} />,
-                        img: ({node, ...props}) => (
-                            <span style={{ display: 'block', margin: '2rem 0', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--color-border)' }}>
-                                <img style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }} {...props} loading="lazy" />
-                            </span>
-                        ),
+                        h2: ({ node, ...props }) => {
+                            void node;
+                            return <h2 style={{ fontSize: '1.25rem', fontWeight: '800', marginTop: '2rem', marginBottom: '1rem', color: '#1f2937' }} {...props} />;
+                        },
+                        h3: ({ node, ...props }) => {
+                            void node;
+                            return <h3 style={{ fontSize: '1.1rem', fontWeight: '700', marginTop: '1.5rem', marginBottom: '0.8rem', color: '#374151' }} {...props} />;
+                        },
+                        p: ({ node, ...props }) => {
+                            void node;
+                            return <p style={{ marginBottom: '1.2rem', color: '#4b5563' }} {...props} />;
+                        },
+                        ul: ({ node, ...props }) => {
+                            void node;
+                            return <ul style={{ marginBottom: '1.2rem', paddingLeft: '1.5rem', listStyleType: 'disc', color: '#4b5563' }} {...props} />;
+                        },
+                        ol: ({ node, ...props }) => {
+                            void node;
+                            return <ol style={{ marginBottom: '1.2rem', paddingLeft: '1.5rem', color: '#4b5563' }} {...props} />;
+                        },
+                        li: ({ node, ...props }) => {
+                            void node;
+                            return <li style={{ marginBottom: '0.5rem' }} {...props} />;
+                        },
+                        strong: ({ node, ...props }) => {
+                            void node;
+                            return <strong style={{ fontWeight: '700', color: '#111827' }} {...props} />;
+                        },
+                        img: () => null,
                     }}
                 >
-                    {guide.content}
+                    {contentWithoutRandomImages}
                 </ReactMarkdown>
             </div>
 
@@ -112,16 +153,16 @@ export default async function GuideDetailPage({ params }: Props) {
                 marginTop: '3rem', padding: '1.5rem', backgroundColor: '#f8fafc',
                 borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)',
             }}>
-                <h3 style={{ fontSize: '1.05rem', fontWeight: '800', marginBottom: '0.6rem' }}>💡 더 많은 복지 혜택을 확인해 보세요</h3>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: '800', marginBottom: '0.6rem' }}>다른 복지 제도도 확인해 보세요</h3>
                 <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.88rem', marginBottom: '1rem' }}>
-                    정부 복지 알리미에서 전국 10,000건 이상의 보조금을 실시간 검색하세요.
+                    제도별 가이드를 먼저 확인하고, 추가 공공서비스는 참고용 검색 도구에서 살펴볼 수 있습니다.
                 </p>
-                <Link href="/" style={{
+                <Link href="/search" style={{
                     display: 'inline-block', backgroundColor: 'var(--color-text)',
                     color: '#fff', padding: '0.7rem 1.5rem',
                     borderRadius: '10px', fontWeight: '700', fontSize: '0.88rem',
                 }}>
-                    보조금 검색하기 →
+                    공공서비스 검색 열기 →
                 </Link>
             </div>
         </article>

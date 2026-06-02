@@ -1,5 +1,6 @@
 'use client';
 
+/* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 
@@ -120,16 +121,15 @@ export default function ServiceList() {
 
     return (
         <section>
-            <div style={{ background: 'linear-gradient(135deg, #1e40af 0%, #6d28d9 50%, #be185d 100%)', borderRadius: 'var(--radius-lg)', padding: '2.2rem 1.5rem 2rem', marginBottom: '1.5rem', color: '#fff', position: 'relative', overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', top: '-60%', right: '-30%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)', borderRadius: '50%' }} />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                    <p style={{ fontSize: '0.72rem', fontWeight: '700', opacity: 0.8, marginBottom: '0.3rem', letterSpacing: '0.08em' }}>{'\uC815\uBD8024 \uACF5\uACF5\uC11C\uBE44\uC2A4 \uC2E4\uC2DC\uAC04 \uC5F0\uB3D9'}</p>
-                    <h1 style={{ fontSize: '1.6rem', fontWeight: '900', marginBottom: '0.4rem', letterSpacing: '-0.02em', lineHeight: 1.25 }}>{'\uB300\uD55C\uBBFC\uAD6D \uBCF4\uC870\uAE08 \uD1B5\uD569\uAC80\uC0C9'}</h1>
+            <div style={{ background: '#1f2937', borderRadius: 'var(--radius-lg)', padding: '2.2rem 1.5rem 2rem', marginBottom: '1.5rem', color: '#fff' }}>
+                <div>
+                    <p style={{ fontSize: '0.72rem', fontWeight: '700', opacity: 0.8, marginBottom: '0.3rem', letterSpacing: '0.08em' }}>{'\uC815\uBD8024 \uACF5\uACF5\uC11C\uBE44\uC2A4 API \uAE30\uBC18'}</p>
+                    <h1 style={{ fontSize: '1.6rem', fontWeight: '900', marginBottom: '0.4rem', letterSpacing: '-0.02em', lineHeight: 1.25 }}>{'\uACF5\uACF5\uC11C\uBE44\uC2A4 \uCC38\uACE0 \uAC80\uC0C9'}</h1>
                     <p style={{ fontSize: '0.88rem', opacity: 0.85, marginBottom: '1.3rem' }}>
-                        {'\uC804\uAD6D'} {totalCount > 0 ? totalCount.toLocaleString() + '\uAC74' : '...'} {'\uC815\uBD80 \uC9C0\uC6D0 \uC11C\uBE44\uC2A4 \uAC80\uC0C9'}
+                        {'\uC804\uAD6D'} {totalCount > 0 ? totalCount.toLocaleString() + '\uAC74' : '...'} {'\uACF5\uACF5\uC11C\uBE44\uC2A4 \uCC38\uACE0 \uAC80\uC0C9'}
                     </p>
                     <div style={{ position: 'relative' }}>
-                        <input type="text" placeholder={'\uC11C\uBE44\uC2A4\uBA85 \uAC80\uC0C9 (\uC608: \uCCAD\uB144, \uCD9C\uC0B0, \uC7A5\uB824\uAE08)'} value={search} onChange={e => setSearch(e.target.value)} aria-label={'\uC815\uBD80 \uBCF4\uC870\uAE08 \uAC80\uC0C9'} style={{ width: '100%', boxSizing: 'border-box', padding: '0.95rem 2.8rem 0.95rem 1.2rem', fontSize: '0.92rem', fontWeight: '500', borderRadius: '12px', border: 'none', backgroundColor: 'rgba(255,255,255,0.95)', color: '#1f2937', boxShadow: '0 4px 20px rgba(0,0,0,0.12)', outline: 'none' }} />
+                        <input type="text" placeholder={'\uC11C\uBE44\uC2A4\uBA85 \uAC80\uC0C9 (\uC608: \uCCAD\uB144, \uCD9C\uC0B0, \uC7A5\uB824\uAE08)'} value={search} onChange={e => setSearch(e.target.value)} aria-label={'\uACF5\uACF5\uC11C\uBE44\uC2A4 \uCC38\uACE0 \uAC80\uC0C9'} style={{ width: '100%', boxSizing: 'border-box', padding: '0.95rem 2.8rem 0.95rem 1.2rem', fontSize: '0.92rem', fontWeight: '500', borderRadius: '12px', border: 'none', backgroundColor: 'rgba(255,255,255,0.95)', color: '#1f2937', boxShadow: '0 4px 20px rgba(0,0,0,0.12)', outline: 'none' }} />
                         <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
                         </div>

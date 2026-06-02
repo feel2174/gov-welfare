@@ -1,23 +1,23 @@
 import type { Metadata } from 'next'
-import Script from 'next/script'
 import Link from 'next/link'
 import { Analytics } from '@vercel/analytics/react'
+import { SITE_URL, SITE_NAME } from '@/lib/site'
 import './globals.css'
 
 export const metadata: Metadata = {
   title: {
-    default: '정부 복지 알리미 - 대한민국 보조금 실시간 통합검색',
+    default: '정부 복지 알리미 - 공식 출처 기반 복지 정보',
     template: '%s | 정부복지 알리미',
   },
-  description: '정부24 공공서비스 API 기반 대한민국 보조금 지원금 실시간 통합검색. 전국 10,000건 이상의 정부 복지 서비스를 한눈에 검색하세요.',
+  description: '공식 출처를 바탕으로 정부 복지 제도와 공공서비스 정보를 정리하는 생활 정보 사이트입니다.',
   keywords: ['정부지원금', '보조금', '복지정책', '정부24', '공공서비스', '지원금검색'],
   openGraph: {
     type: 'website',
     locale: 'ko_KR',
-    url: 'https://cloudplare.com',
-    siteName: '정부복지 알리미',
-    title: '정부 복지 알리미 - 대한민국 보조금 실시간 통합검색',
-    description: '전국 10,000건 이상의 정부 복지 서비스를 한눈에 검색하세요.',
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: '정부 복지 알리미 - 공식 출처 기반 복지 정보',
+    description: '공식 출처를 바탕으로 정부 복지 제도와 공공서비스 정보를 정리합니다.',
   },
   verification: {
     other: {
@@ -35,14 +35,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const websiteJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: '정부복지 알리미',
-    url: 'https://cloudplare.com',
-    description: '대한민국 보조금 지원금 실시간 통합검색 서비스',
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: 'https://cloudplare.com/?search={search_term_string}',
-      'query-input': 'required name=search_term_string',
-    },
+    name: SITE_NAME,
+    url: SITE_URL,
+    description: '대한민국 복지 제도와 공공서비스 정보를 공식 출처 기준으로 정리하는 정보 사이트',
   };
 
   return (
@@ -72,6 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </Link>
             <nav style={{ display: 'flex', gap: '0.3rem', fontSize: '0.85rem' }}>
               <Link href="/guide" style={{ color: 'var(--color-text-secondary)', fontWeight: '600', padding: '0.4rem 0.8rem', borderRadius: '8px' }}>가이드</Link>
+              <Link href="/checklist" style={{ color: 'var(--color-text-secondary)', fontWeight: '600', padding: '0.4rem 0.8rem', borderRadius: '8px' }}>체크리스트</Link>
               <Link href="/about" style={{ color: 'var(--color-text-secondary)', fontWeight: '600', padding: '0.4rem 0.8rem', borderRadius: '8px' }}>소개</Link>
             </nav>
           </div>
@@ -86,15 +82,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
               <Link href="/" style={{ color: 'var(--color-text-secondary)', fontWeight: '600' }}>홈</Link>
               <Link href="/guide" style={{ color: 'var(--color-text-secondary)', fontWeight: '600' }}>복지 가이드</Link>
+              <Link href="/checklist" style={{ color: 'var(--color-text-secondary)', fontWeight: '600' }}>신청 전 체크리스트</Link>
               <Link href="/about" style={{ color: 'var(--color-text-secondary)', fontWeight: '600' }}>소개</Link>
+              <Link href="/editorial-policy" style={{ color: 'var(--color-text-secondary)', fontWeight: '600' }}>편집 원칙</Link>
+              <Link href="/search" style={{ color: 'var(--color-text-secondary)', fontWeight: '600' }}>공공서비스 검색</Link>
               <Link href="/contact" style={{ color: 'var(--color-text-secondary)', fontWeight: '600' }}>문의</Link>
               <Link href="/privacy" style={{ color: 'var(--color-text-secondary)', fontWeight: '600' }}>개인정보처리방침</Link>
               <Link href="/terms" style={{ color: 'var(--color-text-secondary)', fontWeight: '600' }}>이용약관</Link>
             </div>
             <p style={{ fontSize: '0.95rem', fontWeight: '700', color: 'var(--color-text)', marginBottom: '0.5rem' }}>정부 복지 알리미</p>
             <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', lineHeight: '1.7', marginBottom: '0.8rem' }}>
-              본 사이트는 공공데이터포털(data.go.kr)의 정부24 API를 활용하여 대한민국 공공서비스 정보를 제공합니다.
-              공식적인 신청 및 자격 확인은 반드시 해당 기관의 공식 사이트에서 진행하시기 바랍니다.
+              본 사이트는 공공데이터포털(data.go.kr)의 정부24 API와 각 기관의 공개 안내를 바탕으로 공공서비스 정보를 정리합니다.
+              정부 기관이 아니며, 공식 신청 및 자격 확인은 반드시 해당 기관의 공식 사이트에서 진행하시기 바랍니다.
             </p>
             <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
               &copy; 2026 정부 복지 알리미. All rights reserved. | 데이터 출처: 공공데이터포털 &middot; 정부24
@@ -106,4 +105,3 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   )
 }
-

@@ -1,9 +1,10 @@
 import { MetadataRoute } from 'next'
 import { getAllGuides } from '@/lib/policies'
+import { SITE_URL } from '@/lib/site'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const guides = await getAllGuides();
-  const baseUrl = 'https://cloudplare.com';
+  const baseUrl = SITE_URL;
 
   const guideUrls = guides.map((guide) => ({
     url: `${baseUrl}/guide/${guide.id}`,
@@ -25,9 +26,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.9,
     },
+    {
+      url: `${baseUrl}/checklist`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.75,
+    },
     ...guideUrls,
     {
       url: `${baseUrl}/about`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/editorial-policy`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.6,
