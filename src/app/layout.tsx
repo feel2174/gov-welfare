@@ -62,8 +62,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             maxWidth: 'var(--max-width)', margin: '0 auto', padding: '0 1.2rem',
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           }}>
-            <Link href="/" style={{ color: 'var(--color-primary)', fontSize: '1.15rem', fontWeight: '900', letterSpacing: '-0.03em', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              🩵 복지알리미
+            <Link href="/" style={{ color: 'var(--color-primary)', fontSize: '1.15rem', fontWeight: '900', letterSpacing: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              복지알리미
             </Link>
             <nav style={{ display: 'flex', gap: '0.3rem', fontSize: '0.85rem' }}>
               <Link href="/guide" style={{ color: 'var(--color-text-secondary)', fontWeight: '600', padding: '0.4rem 0.8rem', borderRadius: '8px' }}>가이드</Link>
@@ -83,6 +83,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/" style={{ color: 'var(--color-text-secondary)', fontWeight: '600' }}>홈</Link>
               <Link href="/guide" style={{ color: 'var(--color-text-secondary)', fontWeight: '600' }}>복지 가이드</Link>
               <Link href="/checklist" style={{ color: 'var(--color-text-secondary)', fontWeight: '600' }}>신청 전 체크리스트</Link>
+              <Link href="/application-documents" style={{ color: 'var(--color-text-secondary)', fontWeight: '600' }}>서류 준비</Link>
+              <Link href="/income-check" style={{ color: 'var(--color-text-secondary)', fontWeight: '600' }}>소득 확인</Link>
+              <Link href="/duplicate-support" style={{ color: 'var(--color-text-secondary)', fontWeight: '600' }}>중복 지원</Link>
+              <Link href="/rejection-reasons" style={{ color: 'var(--color-text-secondary)', fontWeight: '600' }}>반려 사유</Link>
               <Link href="/about" style={{ color: 'var(--color-text-secondary)', fontWeight: '600' }}>소개</Link>
               <Link href="/editorial-policy" style={{ color: 'var(--color-text-secondary)', fontWeight: '600' }}>편집 원칙</Link>
               <Link href="/search" style={{ color: 'var(--color-text-secondary)', fontWeight: '600' }}>공공서비스 검색</Link>
@@ -93,7 +97,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <p style={{ fontSize: '0.95rem', fontWeight: '700', color: 'var(--color-text)', marginBottom: '0.5rem' }}>정부 복지 알리미</p>
             <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', lineHeight: '1.7', marginBottom: '0.8rem' }}>
               본 사이트는 공공데이터포털(data.go.kr)의 정부24 API와 각 기관의 공개 안내를 바탕으로 공공서비스 정보를 정리합니다.
-              정부 기관이 아니며, 공식 신청 및 자격 확인은 반드시 해당 기관의 공식 사이트에서 진행하시기 바랍니다.
+              정부 기관이 아니며, 공식 신청 및 자격 확인은 해당 기관의 공식 사이트에서 진행하시기 바랍니다.
             </p>
             <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
               &copy; 2026 정부 복지 알리미. All rights reserved. | 데이터 출처: 공공데이터포털 &middot; 정부24

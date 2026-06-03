@@ -21,7 +21,7 @@ export default function SearchPage() {
                 </h1>
                 <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', lineHeight: 1.7 }}>
                     이 페이지는 공공데이터포털 정부24 API를 활용한 보조 검색 기능입니다.
-                    검색 결과는 자동 수집 정보가 포함될 수 있으므로, 신청 전 자격 요건과 접수 가능 여부는 반드시 공식 신청 화면에서 다시 확인해 주세요.
+                    검색 결과는 자동 수집 정보가 포함될 수 있으므로, 신청 전 자격 요건과 접수 가능 여부는 공식 신청 화면에서 다시 확인해 주세요.
                 </p>
             </header>
             <ServiceList />

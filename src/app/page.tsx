@@ -1,4 +1,4 @@
-import { getAllGuides } from '@/lib/policies';
+import { getIndexableGuides } from '@/lib/policies';
 import Link from 'next/link';
 
 export const metadata = {
@@ -7,8 +7,7 @@ export const metadata = {
 };
 
 export default async function Home() {
-    const guides = await getAllGuides();
-    const featuredGuides = guides.slice(0, 8);
+    const featuredGuides = await getIndexableGuides();
 
     return (
         <div>
@@ -145,6 +144,41 @@ export default async function Home() {
                                     overflow: 'hidden',
                                 }}>
                                     {guide.description}
+                                </p>
+                            </article>
+                        </Link>
+                    ))}
+                </div>
+            </section>
+
+            <section style={{
+                marginTop: '2.4rem',
+                borderTop: '1px solid var(--color-border)',
+                paddingTop: '1.4rem',
+            }}>
+                <h2 style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--color-text)', marginBottom: '0.75rem' }}>
+                    신청 실패를 줄이는 실무형 자료
+                </h2>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.8rem' }}>
+                    {[
+                        ['/application-documents', '신청 전 서류 준비 체크리스트', '주민등록, 가족관계, 임대차, 소득 자료처럼 자주 필요한 서류를 신청 상황별로 정리합니다.'],
+                        ['/income-check', '소득인정액 확인 전 알아야 할 것', '복지 신청에서 소득과 재산이 어떻게 다르게 보이는지, 상담 전 정리할 항목을 안내합니다.'],
+                        ['/duplicate-support', '중복 지원 여부 확인 방법', '비슷한 목적의 급여와 바우처가 있을 때 먼저 확인해야 할 기준을 정리합니다.'],
+                        ['/rejection-reasons', '신청이 반려되는 흔한 이유', '서류 누락, 명의 불일치, 주소 문제처럼 현장에서 자주 막히는 지점을 점검합니다.'],
+                    ].map(([href, title, description]) => (
+                        <Link key={href} href={href} style={{ textDecoration: 'none' }}>
+                            <article className="guide-card" style={{
+                                backgroundColor: 'var(--color-surface)',
+                                border: '1px solid var(--color-border)',
+                                borderRadius: 'var(--radius-md)',
+                                padding: '1.1rem',
+                                minHeight: '9.5rem',
+                            }}>
+                                <h3 style={{ fontSize: '0.98rem', fontWeight: 850, color: 'var(--color-text)', marginBottom: '0.45rem', lineHeight: 1.45 }}>
+                                    {title}
+                                </h3>
+                                <p style={{ fontSize: '0.84rem', lineHeight: 1.65, color: 'var(--color-text-secondary)' }}>
+                                    {description}
                                 </p>
                             </article>
                         </Link>

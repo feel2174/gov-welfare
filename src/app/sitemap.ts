@@ -1,9 +1,9 @@
 import { MetadataRoute } from 'next'
-import { getAllGuides } from '@/lib/policies'
+import { getIndexableGuides } from '@/lib/policies'
 import { SITE_URL } from '@/lib/site'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const guides = await getAllGuides();
+  const guides = await getIndexableGuides();
   const baseUrl = SITE_URL;
 
   const guideUrls = guides.map((guide) => ({
@@ -31,6 +31,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.75,
+    },
+    {
+      url: `${baseUrl}/application-documents`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.72,
+    },
+    {
+      url: `${baseUrl}/income-check`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.72,
+    },
+    {
+      url: `${baseUrl}/duplicate-support`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.72,
+    },
+    {
+      url: `${baseUrl}/rejection-reasons`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.72,
     },
     ...guideUrls,
     {
