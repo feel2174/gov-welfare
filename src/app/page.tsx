@@ -197,7 +197,7 @@ export default async function Home() {
                     공공서비스 검색은 참고 도구로 제공합니다
                 </h2>
                 <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.86rem', lineHeight: 1.65 }}>
-                    정부24 API 검색 결과는 색인용 핵심 콘텐츠가 아니라 사용자가 추가 제도를 찾아볼 수 있는 보조 기능입니다.
+                    정부24 API 검색 결과는 사용자가 추가 제도를 찾아볼 수 있도록 제공하는 보조 기능입니다.
                     검색 결과의 세부 조건과 신청 가능 여부는 각 기관의 공식 신청 화면에서 다시 확인해야 합니다.
                 </p>
                 <Link href="/search" style={{

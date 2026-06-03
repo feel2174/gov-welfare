@@ -11,8 +11,6 @@ export interface Guide {
     reviewedAt?: string;
     sources?: GuideSource[];
     indexable?: boolean;
-    qualityStatus?: 'pillar' | 'supporting';
-    qualityNote?: string;
 }
 
 export interface GuideSource {
@@ -339,10 +337,6 @@ function enrichGuide(guide: Guide): Guide {
         ...guide,
         content: buildApprovalContent(guide),
         indexable,
-        qualityStatus: indexable ? 'pillar' : 'supporting',
-        qualityNote: indexable
-            ? '애드센스 승인 재신청 전 핵심 색인 문서로 보강한 가이드입니다.'
-            : '중복 또는 보강 대기 문서로, 승인 안정화를 위해 검색 색인에서 제외합니다.',
         reviewedAt: CONTENT_REVIEWED_AT,
         sources: guideSources[guide.id] || commonSources,
     };
@@ -357,11 +351,6 @@ export const getIndexableGuides = async (): Promise<Guide[]> => {
     return INDEXABLE_GUIDE_IDS
         .map((id) => guides.find((guide) => guide.id === id))
         .filter((guide): guide is Guide => Boolean(guide));
-};
-
-export const getSupportingGuides = async (): Promise<Guide[]> => {
-    const guides = await getAllGuides();
-    return guides.filter((guide) => !guide.indexable);
 };
 
 export const getGuideById = async (id: string): Promise<Guide | undefined> => {

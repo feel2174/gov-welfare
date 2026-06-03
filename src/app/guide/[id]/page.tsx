@@ -98,20 +98,6 @@ export default async function GuideDetailPage({ params }: Props) {
                 <p style={{ color: 'var(--color-text-muted)', fontSize: '0.82rem' }}>
                     정부 복지 알리미 편집팀 · 최초 작성 {guide.date} · 최종 검토 {guide.reviewedAt}
                 </p>
-                {guide.qualityNote && (
-                    <p style={{
-                        marginTop: '0.8rem',
-                        color: guide.indexable ? '#166534' : '#92400e',
-                        backgroundColor: guide.indexable ? '#f0fdf4' : '#fffbeb',
-                        border: `1px solid ${guide.indexable ? '#bbf7d0' : '#fde68a'}`,
-                        borderRadius: 'var(--radius-md)',
-                        padding: '0.75rem 0.85rem',
-                        fontSize: '0.82rem',
-                        lineHeight: 1.65,
-                    }}>
-                        {guide.qualityNote}
-                    </p>
-                )}
             </header>
 
             <section style={{
