@@ -1,99 +1,105 @@
-import Link from 'next/link';
-
 export const metadata = {
-    title: '복지 제도 신청 전 확인 체크리스트',
-    description: '2026년 5월 기준 복지 제도 신청 전에 확인해야 할 자격, 서류, 기간, 공식 출처 점검 항목을 정리합니다.',
+  title: '배포 전 확인 체크리스트',
+  description: '작은 웹사이트를 배포하기 전 DNS, 메타데이터, sitemap, 캐시, 실제 도메인을 확인하는 CloudPlare 체크리스트입니다.',
 };
 
+const sections = [
+  {
+    title: '주소와 색인',
+    items: [
+      '기준 주소를 하나로 정하고 내부 링크, canonical, sitemap이 모두 같은 주소를 사용한다.',
+      'robots.txt가 sitemap 위치를 정확히 안내하고, 임시 페이지를 색인 대상으로 보내지 않는다.',
+      '예전 주제의 URL이 새 사이트 내부 링크나 sitemap에 남아 있지 않다.',
+      '404로 정리한 이전 경로가 검색 가능한 목록이나 푸터에 다시 등장하지 않는다.',
+    ],
+  },
+  {
+    title: 'DNS와 HTTPS',
+    items: [
+      'A, CNAME, TXT, MX 레코드의 기존 값을 배포 전 기록했다.',
+      '루트 도메인과 www 서브도메인의 연결 방식을 각각 확인했다.',
+      'HTTPS 인증서와 http에서 https로의 이동이 실제 브라우저에서 정상이다.',
+      '도메인 소유권 확인용 TXT 레코드가 다른 작업 중 삭제되지 않았는지 확인한다.',
+    ],
+  },
+  {
+    title: '콘텐츠 품질',
+    items: [
+      '홈, 목록, 상세 글, 소개 페이지가 모두 같은 사이트 목적을 설명한다.',
+      '각 글은 공식 문서 링크만 나열하지 않고 운영자의 판단 기준과 실수 지점을 설명한다.',
+      '과장된 표현, 수익 보장, 특정 서비스 오인 표현, 클릭 유도 문구가 없다.',
+      '각 글 하단에 출처와 최종 검토일이 보이며, 본문 설명과 출처 주제가 서로 맞는다.',
+    ],
+  },
+  {
+    title: '성능과 캐시',
+    items: [
+      'HTML 문서와 정적 자산의 캐시 정책을 구분한다.',
+      '첫 화면에서 불필요한 이미지, 애니메이션, 클라이언트 스크립트를 줄인다.',
+      '배포 후 실제 도메인에서 홈, 노트 상세, 정책 페이지를 다시 열어본다.',
+      '모바일 320px 폭에서도 메뉴와 제목이 가로로 넘치지 않는다.',
+    ],
+  },
+];
+
+const releaseSteps = [
+  ['1단계', '빌드 결과 확인', '배포 전에 build와 lint를 실행하고, 예상하지 못한 동적 라우트나 오래된 경로가 남아 있는지 확인합니다.'],
+  ['2단계', '실제 도메인 확인', '배포 후에는 localhost가 아니라 실제 도메인에서 홈, 대표 글, sitemap, robots, 정책 페이지를 엽니다.'],
+  ['3단계', '색인 대상 점검', 'sitemap에 들어간 URL은 모두 충분한 본문과 고유한 제목을 가져야 하며, 임시 페이지는 제외합니다.'],
+  ['4단계', '운영 기록 남기기', '배포 커밋, 확인한 URL, 발견한 문제, 되돌릴 방법을 짧게 적어 다음 배포의 기준으로 씁니다.'],
+];
+
+const failureExamples = [
+  'sitemap은 새 주소를 말하지만 푸터 링크는 예전 경로를 가리키는 경우',
+  'DNS는 바뀌었지만 브라우저나 CDN 캐시가 이전 HTML을 계속 보여주는 경우',
+  '노트 본문은 새 주제인데 개인정보처리방침이나 약관에 이전 사이트 설명이 남아 있는 경우',
+  '모바일 폭에서 메뉴가 가로로 넘쳐 첫 화면부터 사이트가 덜 다듬어진 것처럼 보이는 경우',
+];
+
 export default function ChecklistPage() {
-    const sections = [
-        {
-            title: '1. 자격 기준을 같은 기준일로 맞추기',
-            items: [
-                '연령, 거주지, 가구원 수, 소득, 재산 기준은 제도마다 판단 시점이 다를 수 있습니다.',
-                '건강보험료나 소득인정액을 보는 제도는 최근 납부 내역, 전년도 소득, 현재 가구 구성이 서로 맞는지 확인해야 합니다.',
-                '청년, 신혼부부, 한부모, 장애인, 고령자처럼 대상 유형이 정해진 제도는 세부 정의가 기관별로 다를 수 있습니다.',
-            ],
-        },
-        {
-            title: '2. 신청 기간과 접수 창구 확인하기',
-            items: [
-                '상시 신청 제도인지, 모집 공고 기간에만 신청할 수 있는 제도인지 먼저 구분합니다.',
-                '온라인 신청이 가능하더라도 추가 서류 제출이나 방문 확인이 필요한 경우가 있습니다.',
-                '지방자치단체 사업은 같은 이름의 제도라도 지역별 예산, 접수 기간, 제출 서류가 달라질 수 있습니다.',
-            ],
-        },
-        {
-            title: '3. 중복 지원과 사후 의무 확인하기',
-            items: [
-                '이미 받고 있는 급여, 바우처, 주거 지원, 고용 지원이 있다면 중복 수급 제한을 확인합니다.',
-                '선정 이후 취업, 소득 증가, 이사, 가구원 변동이 생기면 변경 신고 의무가 발생할 수 있습니다.',
-                '부정확한 정보로 신청하거나 변경 신고를 놓치면 환수, 지원 중단, 추가 제재가 생길 수 있습니다.',
-            ],
-        },
-        {
-            title: '4. 공식 출처로 최종 확인하기',
-            items: [
-                '블로그나 커뮤니티의 요약 글은 참고만 하고, 최종 기준은 정부24, 복지로, 고용24, 주택도시기금, 지자체 공고문에서 확인합니다.',
-                '지원 금액과 선정 기준은 예산, 고시, 시행 지침에 따라 바뀔 수 있으므로 신청 직전에 최신 공고를 다시 확인합니다.',
-                '전화 문의가 필요한 제도는 상담 일시, 안내받은 기관명, 담당 부서, 안내 내용을 메모해 두는 것이 좋습니다.',
-            ],
-        },
-    ];
+  return (
+    <article style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)', padding: '2rem 1.5rem' }}>
+      <header style={{ marginBottom: '2rem', paddingBottom: '1.4rem', borderBottom: '1px solid var(--color-border)' }}>
+        <p style={{ fontSize: '0.78rem', color: 'var(--color-primary)', fontWeight: 800, marginBottom: '0.35rem' }}>Release Checklist</p>
+        <h1 style={{ fontSize: '1.55rem', fontWeight: 900, marginBottom: '0.55rem' }}>배포 전 확인 체크리스트</h1>
+        <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.92rem', lineHeight: 1.75 }}>
+          이 체크리스트는 CloudPlare 노트를 실제 배포 전에 다시 확인할 수 있도록 압축한 것입니다.
+          작은 사이트일수록 배포 버튼보다 기준 주소, 메타데이터, 캐시, 오래된 URL 정리가 더 중요해지는 순간이 많습니다.
+        </p>
+      </header>
 
-    return (
-        <article>
-            <header style={{ marginBottom: '1.8rem' }}>
-                <p style={{ fontSize: '0.78rem', color: 'var(--color-primary)', fontWeight: 800, marginBottom: '0.35rem' }}>
-                    2026년 5월 기준
-                </p>
-                <h1 style={{ fontSize: '1.55rem', fontWeight: 900, color: 'var(--color-text)', lineHeight: 1.35, marginBottom: '0.6rem' }}>
-                    복지 제도 신청 전 확인 체크리스트
-                </h1>
-                <p style={{ fontSize: '0.92rem', lineHeight: 1.75, color: 'var(--color-text-secondary)' }}>
-                    복지 제도는 이름이 비슷해도 대상, 접수 기간, 제출 서류, 중복 지원 제한이 다를 수 있습니다.
-                    아래 항목은 특정 제도의 선정 결과를 보장하지 않으며, 신청자가 공식 안내를 확인할 때 놓치기 쉬운 기준을 정리한 점검 목록입니다.
-                </p>
-            </header>
+      {sections.map((section) => (
+        <section key={section.title} style={{ marginBottom: '2rem' }}>
+          <h2 style={{ fontSize: '1.12rem', fontWeight: 900, marginBottom: '0.75rem' }}>{section.title}</h2>
+          <ul style={{ color: 'var(--color-text-secondary)', fontSize: '0.92rem', lineHeight: 1.85, paddingLeft: '1.1rem' }}>
+            {section.items.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </section>
+      ))}
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {sections.map((section) => (
-                    <section key={section.title} style={{
-                        backgroundColor: 'var(--color-surface)',
-                        border: '1px solid var(--color-border)',
-                        borderRadius: 'var(--radius-md)',
-                        padding: '1.25rem',
-                    }}>
-                        <h2 style={{ fontSize: '1.05rem', fontWeight: 850, color: 'var(--color-text)', marginBottom: '0.75rem' }}>
-                            {section.title}
-                        </h2>
-                        <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', paddingLeft: '1.1rem' }}>
-                            {section.items.map((item) => (
-                                <li key={item} style={{ fontSize: '0.9rem', lineHeight: 1.7, color: 'var(--color-text-secondary)' }}>
-                                    {item}
-                                </li>
-                            ))}
-                        </ul>
-                    </section>
-                ))}
-            </div>
+      <section style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.5rem', marginTop: '0.5rem', marginBottom: '2rem' }}>
+        <h2 style={{ fontSize: '1.12rem', fontWeight: 900, marginBottom: '0.75rem' }}>배포 당일 10분 점검 순서</h2>
+        <div style={{ display: 'grid', gap: '0.75rem' }}>
+          {releaseSteps.map(([step, title, description]) => (
+            <article key={step} style={{ backgroundColor: '#f8fafc', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', padding: '0.95rem 1rem' }}>
+              <p style={{ color: 'var(--color-primary)', fontSize: '0.76rem', fontWeight: 850, marginBottom: '0.25rem' }}>{step}</p>
+              <h3 style={{ fontSize: '0.98rem', fontWeight: 850, marginBottom: '0.25rem' }}>{title}</h3>
+              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.88rem', lineHeight: 1.7 }}>{description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
-            <section style={{
-                marginTop: '1.4rem',
-                borderTop: '1px solid var(--color-border)',
-                paddingTop: '1.2rem',
-            }}>
-                <h2 style={{ fontSize: '1rem', fontWeight: 850, color: 'var(--color-text)', marginBottom: '0.5rem' }}>
-                    신청 전 마지막 확인 순서
-                </h2>
-                <p style={{ fontSize: '0.9rem', lineHeight: 1.75, color: 'var(--color-text-secondary)', marginBottom: '0.9rem' }}>
-                    관심 있는 제도를 찾았다면 먼저 공식 안내에서 대상 요건을 확인하고, 다음으로 신청 기간과 접수 방법을 확인한 뒤,
-                    필요한 서류를 준비해 실제 신청 화면에서 입력 항목을 검토하는 순서가 안전합니다.
-                </p>
-                <Link href="/guide" style={{ color: 'var(--color-primary)', fontWeight: 750, fontSize: '0.88rem' }}>
-                    제도별 가이드 확인하기 →
-                </Link>
-            </section>
-        </article>
-    );
+      <section>
+        <h2 style={{ fontSize: '1.12rem', fontWeight: 900, marginBottom: '0.75rem' }}>자주 놓치는 실패 사례</h2>
+        <ul style={{ color: 'var(--color-text-secondary)', fontSize: '0.92rem', lineHeight: 1.85, paddingLeft: '1.1rem' }}>
+          {failureExamples.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      </section>
+    </article>
+  );
 }

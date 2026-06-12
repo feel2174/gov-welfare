@@ -1,67 +1,58 @@
-import React from 'react';
 import Link from 'next/link';
+import { CONTACT_EMAIL, SITE_NAME } from '@/lib/site';
 
 export const metadata = {
-    title: '사이트 소개',
-    description: '정부 복지 알리미는 공식 출처와 공공데이터를 바탕으로 복지 제도와 공공서비스 정보를 정리하는 정보 사이트입니다.',
+  title: '사이트 소개',
+  description: 'CloudPlare는 작은 웹사이트 운영자를 위한 독립 클라우드 운영 노트입니다.',
 };
 
 export default function AboutPage() {
-    const h2 = { fontSize: '1.2rem', fontWeight: '800' as const, color: 'var(--color-text)', marginBottom: '0.8rem' };
-    const p = { fontSize: '0.92rem', color: 'var(--color-text-secondary)', lineHeight: '1.8' };
-    const section = { marginBottom: '2.5rem' };
+  const h2 = { fontSize: '1.15rem', fontWeight: 900, color: 'var(--color-text)', marginBottom: '0.7rem' };
+  const p = { fontSize: '0.92rem', color: 'var(--color-text-secondary)', lineHeight: 1.85, marginBottom: '0.75rem' };
 
-    return (
-        <article style={{ backgroundColor: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', padding: '2rem 1.5rem', border: '1px solid var(--color-border)' }}>
-            <h1 style={{ fontSize: '1.6rem', fontWeight: '900', marginBottom: '0.4rem' }}>사이트 소개</h1>
-            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '2rem', paddingBottom: '1.5rem', borderBottom: '1px solid var(--color-border)' }}>
-                정부 복지 알리미를 방문해 주셔서 감사합니다.
-            </p>
+  return (
+    <article style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)', padding: '2rem 1.5rem' }}>
+      <header style={{ marginBottom: '2rem', paddingBottom: '1.4rem', borderBottom: '1px solid var(--color-border)' }}>
+        <h1 style={{ fontSize: '1.6rem', fontWeight: 900, marginBottom: '0.5rem' }}>{SITE_NAME} 소개</h1>
+        <p style={{ ...p, marginBottom: 0 }}>작은 웹사이트를 직접 운영하는 사람을 위한 클라우드 운영 기록 사이트입니다.</p>
+      </header>
 
-            <div style={section}>
-                <h2 style={h2}>🩵 정부 복지 알리미란?</h2>
-                <p style={p}>정부 복지 알리미는 정부 및 지방자치단체에서 제공하는 복지 서비스와 보조금 정보를 공식 출처 기준으로 정리하는 정보 제공 사이트입니다.</p>
-                <p style={{ ...p, marginTop: '0.8rem' }}>복지 제도는 소득, 나이, 거주지, 신청 기간에 따라 적용 여부가 달라질 수 있습니다. 본 사이트는 신청 전 확인해야 할 요건과 공식 신청 경로를 이해하기 쉽게 정리하는 것을 목표로 합니다.</p>
-            </div>
+      <section style={{ marginBottom: '2rem' }}>
+        <h2 style={h2}>무엇을 다루나요?</h2>
+        <p style={p}>
+          CloudPlare는 DNS, HTTPS, 정적 배포, HTTP 캐시, CDN, Core Web Vitals, 장애 기록처럼
+          작은 사이트 운영자가 실제로 자주 부딪히는 주제를 다룹니다.
+        </p>
+        <p style={p}>
+          공식 문서의 문장을 옮겨 적는 대신, 배포 전후에 무엇을 확인해야 하는지와 문제가 생겼을 때 어떤 순서로 좁혀 볼지를 중심으로 씁니다.
+        </p>
+      </section>
 
-            <div style={section}>
-                <h2 style={h2}>📡 데이터 출처</h2>
-                <p style={p}>공공서비스 검색 영역은 <strong>공공데이터포털(data.go.kr)</strong>에서 제공하는 <strong>정부24 대한민국 공공서비스 정보 API</strong>를 활용합니다. 가이드 콘텐츠는 각 제도의 공식 안내와 공개 자료를 함께 확인해 작성합니다.</p>
-                <div style={{ backgroundColor: '#f8fafc', borderRadius: 'var(--radius-sm)', padding: '1rem 1.2rem', marginTop: '0.8rem', border: '1px solid var(--color-border)' }}>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', lineHeight: '1.8' }}>
-                        &bull; API 제공: 행정안전부 (정부24)<br />
-                        &bull; 데이터 포털: 공공데이터포털 (data.go.kr)<br />
-                        &bull; 공공서비스 검색: 정부24 공공서비스 API 활용<br />
-                        &bull; 갱신 방식: API 응답 기준 + 1시간 캐싱
-                    </p>
-                </div>
-            </div>
+      <section style={{ marginBottom: '2rem' }}>
+        <h2 style={h2}>어떤 서비스와 관련이 있나요?</h2>
+        <p style={p}>
+          이 사이트는 특정 클라우드 사업자, CDN 서비스, 보안 서비스의 공식 사이트가 아닙니다.
+          CloudPlare라는 이름은 독립 운영 노트의 브랜드명이며, 비슷한 이름의 외부 서비스와 제휴 관계가 없습니다.
+        </p>
+      </section>
 
-            <div style={section}>
-                <h2 style={h2}>🎯 운영 목적</h2>
-                <ul style={{ ...p, paddingLeft: '1.2rem', listStyle: 'disc' }}>
-                    <li style={{ marginBottom: '0.5rem' }}>정부 보조금과 공공서비스 정보를 쉽게 탐색할 수 있는 환경 제공</li>
-                    <li style={{ marginBottom: '0.5rem' }}>복잡한 자격 요건과 신청 절차를 이해하기 쉽게 안내하는 가이드 콘텐츠 제공</li>
-                    <li style={{ marginBottom: '0.5rem' }}>각 정부 기관의 공식 신청 페이지로의 정확한 안내</li>
-                    <li>정보 접근성이 낮은 계층의 복지 사각지대 해소 기여</li>
-                </ul>
-            </div>
+      <section style={{ marginBottom: '2rem' }}>
+        <h2 style={h2}>작성 기준</h2>
+        <p style={p}>
+          글은 MDN, web.dev, Next.js 공식 문서, 검색엔진 문서처럼 확인 가능한 1차 자료를 먼저 살핀 뒤 작성합니다.
+          각 노트 하단에는 참고한 공식 자료를 남기고, 내용이 바뀔 수 있는 주제는 최종 검토일을 함께 표시합니다.
+        </p>
+        <p style={p}>
+          자세한 기준은 <Link href="/editorial-policy" style={{ color: 'var(--color-primary)', fontWeight: 750 }}>편집 원칙</Link>에서 확인할 수 있습니다.
+        </p>
+      </section>
 
-            <div style={section}>
-                <h2 style={h2}>👤 운영자 정보</h2>
-                <p style={p}>본 사이트는 공익 정보 제공을 목적으로 개인이 운영하며, 정부 기관과는 직접적인 관련이 없습니다. 제공되는 정보는 공공데이터 API와 공개된 공식 안내를 바탕으로 정리되며, 정확한 자격 확인과 신청은 각 기관의 공식 웹사이트를 이용하시기 바랍니다.</p>
-            </div>
-
-            <div style={section}>
-                <h2 style={h2}>📝 정보 검토 방식</h2>
-                <p style={p}>가이드 콘텐츠는 정부24, 복지로, 고용24, 주택도시기금 등 공식 안내를 우선 참고해 작성합니다. 금액, 소득 기준, 신청 기간처럼 변동 가능성이 있는 정보는 각 글의 출처 영역과 공식 신청 화면에서 다시 확인할 수 있도록 안내합니다.</p>
-                <p style={{ ...p, marginTop: '0.8rem' }}>자세한 기준은 <Link href="/editorial-policy" style={{ color: 'var(--color-primary)', fontWeight: '700' }}>편집 원칙</Link>에서 확인할 수 있습니다.</p>
-            </div>
-
-            <div>
-                <h2 style={h2}>📬 문의하기</h2>
-                <p style={p}>사이트 이용 중 궁금한 점이나 오류 신고는 <Link href="/contact" style={{ color: 'var(--color-primary)', fontWeight: '700' }}>문의 페이지</Link>를 통해 연락해 주세요.</p>
-            </div>
-        </article>
-    );
+      <section>
+        <h2 style={h2}>문의와 정정 요청</h2>
+        <p style={p}>
+          오류 제보나 정정 요청은 <Link href="/contact" style={{ color: 'var(--color-primary)', fontWeight: 750 }}>문의 페이지</Link> 또는 {CONTACT_EMAIL}로 보내주세요.
+        </p>
+      </section>
+    </article>
+  );
 }

@@ -1,13 +1,14 @@
-import { getIndexableGuides } from '@/lib/policies';
 import Link from 'next/link';
+import { getAllNotes } from '@/lib/notes';
+import { CONTENT_REVIEWED_AT } from '@/lib/site';
 
 export const metadata = {
-    title: '정부 복지 알리미 - 공식 출처 기반 복지 정보',
-    description: '2026년 5월 기준 공식 출처를 바탕으로 복지 제도와 공공서비스 정보를 정리합니다.',
+    title: 'CloudPlare - 클라우드 운영 노트',
+    description: 'DNS, 배포, HTTP 캐시, CDN, Core Web Vitals, 장애 기록을 작은 사이트 운영자 관점으로 정리합니다.',
 };
 
 export default async function Home() {
-    const featuredGuides = await getIndexableGuides();
+    const featuredNotes = getAllNotes().slice(-5);
 
     return (
         <div>
@@ -20,14 +21,14 @@ export default async function Home() {
                     marginBottom: '1.5rem',
                 }}>
                     <p style={{ fontSize: '0.78rem', color: 'var(--color-primary)', fontWeight: '800', marginBottom: '0.4rem' }}>
-                        2026년 5월 기준 · 공식 출처 확인형 복지 정보
+                        독립 운영 기록 · 최종 검토 {CONTENT_REVIEWED_AT}
                     </p>
                     <h1 style={{ fontSize: '1.55rem', fontWeight: '900', color: 'var(--color-text)', lineHeight: 1.35, marginBottom: '0.6rem' }}>
-                        신청 전 확인해야 할 정부 복지 제도와 공공서비스
+                        작은 웹사이트를 위한 클라우드 운영 노트
                     </h1>
                     <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.92rem', lineHeight: 1.7 }}>
-                        정부24, 복지로, 고용24, 주택도시기금 등 공식 안내를 바탕으로 자격 요건, 신청 방법, 확인해야 할 주의사항을 정리합니다.
-                        실제 신청과 최종 자격 판단은 각 기관의 공식 신청 화면을 기준으로 확인해 주세요.
+                        CloudPlare는 DNS, 배포, 캐시, 성능, 장애 대응을 혼자 또는 작은 팀이 이해할 수 있도록 정리하는 기술 노트입니다.
+                        특정 클라우드 회사의 공식 문서가 아니라, 운영자가 실제 배포 전후에 확인할 판단 기준을 차분히 기록합니다.
                     </p>
                 </div>
 
@@ -38,9 +39,9 @@ export default async function Home() {
                     marginBottom: '2rem',
                 }}>
                     {[
-                        ['자격 요건 확인', '연령, 소득, 재산, 거주지, 가구 형태처럼 신청 결과에 영향을 주는 항목을 먼저 구분합니다.'],
-                        ['신청 경로 정리', '온라인 신청, 주민센터 방문, 전담 기관 접수 등 제도별 접수 창구를 공식 출처 중심으로 안내합니다.'],
-                        ['주의사항 점검', '신청 기간, 중복 수혜 제한, 제출 서류, 사후 변경 신고처럼 놓치기 쉬운 항목을 함께 확인합니다.'],
+                        ['도메인과 DNS', '레코드 변경 전 스냅샷, 전파 시간, 기준 주소를 먼저 확인합니다.'],
+                        ['배포와 캐시', '정적 사이트 배포 후 실제 도메인, CDN, HTTP 캐시 계층을 나눠 봅니다.'],
+                        ['성능과 장애 기록', 'Core Web Vitals와 장애 메모를 다음 배포의 체크리스트로 연결합니다.'],
                     ].map(([title, description]) => (
                         <article key={title} style={{
                             backgroundColor: 'var(--color-surface)',
@@ -65,16 +66,16 @@ export default async function Home() {
                     marginBottom: '2rem',
                 }}>
                     <h2 style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--color-text)', marginBottom: '0.75rem' }}>
-                        복지 제도 신청 전 기본 점검
+                        배포 전 기본 점검
                     </h2>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.7rem 1.2rem' }}>
                         {[
-                            '가구원 수와 건강보험료, 소득인정액 기준을 같은 기간의 자료로 확인합니다.',
-                            '신청 기간이 정해진 제도는 접수 시작일과 마감일, 예산 소진 여부를 함께 확인합니다.',
-                            '이미 받고 있는 급여나 바우처가 있다면 중복 지원 제한 여부를 공식 안내에서 확인합니다.',
-                            '주민등록상 주소지, 실제 거주지, 근무지 기준이 서로 다른 제도인지 구분합니다.',
-                            '온라인 신청 전 공동인증서, 간편인증, 가족관계 서류, 통장 사본 등 필요한 자료를 준비합니다.',
-                            '선정 후에도 소득, 취업, 이사, 가구원 변동이 생기면 변경 신고 의무가 있는지 확인합니다.',
+                            '기준 도메인, canonical, sitemap이 같은 주소를 가리키는지 확인합니다.',
+                            'DNS 레코드 변경 전 기존 값을 캡처하고 TTL을 기록합니다.',
+                            '배포 후 루트, 목록, 상세 글, 정책 페이지를 실제 도메인으로 확인합니다.',
+                            'HTML 문서와 정적 자산의 캐시 정책이 서로 맞는지 구분합니다.',
+                            '모바일 화면에서 제목, 메뉴, 본문 폭이 안정적으로 보이는지 확인합니다.',
+                            '문제가 생겼을 때 되돌릴 값과 확인한 URL을 운영 메모에 남깁니다.',
                         ].map((item) => (
                             <p key={item} style={{ fontSize: '0.86rem', lineHeight: 1.65, color: 'var(--color-text-secondary)' }}>
                                 {item}
@@ -88,7 +89,7 @@ export default async function Home() {
                         fontWeight: 750,
                         fontSize: '0.86rem',
                     }}>
-                        신청 전 체크리스트 자세히 보기 →
+                        배포 체크리스트 자세히 보기 →
                     </Link>
                 </section>
 
@@ -98,11 +99,11 @@ export default async function Home() {
                 }}>
                     <div>
                         <h2 style={{ fontSize: '1.4rem', fontWeight: '900', color: 'var(--color-text)', marginBottom: '0.2rem' }}>
-                            복지 가이드
+                            최근 운영 노트
                         </h2>
-                        <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>공식 출처와 함께 확인하는 제도별 신청 안내</p>
+                        <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>배포 전후에 실제로 다시 열어보는 실무형 기록</p>
                     </div>
-                    <Link href="/guide" style={{
+                    <Link href="/notes" style={{
                         color: 'var(--color-primary)', fontWeight: '700',
                         fontSize: '0.85rem',
                     }}>
@@ -111,9 +112,9 @@ export default async function Home() {
                 </header>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                    {featuredGuides.map((guide) => (
-                        <Link key={guide.id} href={`/guide/${guide.id}`} style={{ textDecoration: 'none' }}>
-                            <article className="guide-card" style={{
+                    {featuredNotes.map((note) => (
+                        <Link key={note.slug} href={`/notes/${note.slug}`} style={{ textDecoration: 'none' }}>
+                            <article className="note-card" style={{
                                 padding: '1.4rem 1.5rem',
                                 backgroundColor: 'var(--color-surface)',
                                 borderRadius: 'var(--radius-md)',
@@ -126,16 +127,16 @@ export default async function Home() {
                                         padding: '0.2rem 0.6rem', borderRadius: '6px',
                                         fontSize: '0.72rem', fontWeight: '700',
                                     }}>
-                                        {guide.category}
+                                        {note.category}
                                     </span>
-                                    <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{guide.date}</span>
+                                    <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{note.publishedAt}</span>
                                 </div>
                                 <h3 style={{
                                     fontSize: '1.05rem', fontWeight: '800',
                                     color: 'var(--color-text)', lineHeight: 1.4,
                                     marginBottom: '0.4rem',
                                 }}>
-                                    {guide.title}
+                                    {note.title}
                                 </h3>
                                 <p style={{
                                     fontSize: '0.88rem', color: 'var(--color-text-secondary)',
@@ -143,7 +144,7 @@ export default async function Home() {
                                     display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
                                     overflow: 'hidden',
                                 }}>
-                                    {guide.description}
+                                    {note.description}
                                 </p>
                             </article>
                         </Link>
@@ -157,17 +158,17 @@ export default async function Home() {
                 paddingTop: '1.4rem',
             }}>
                 <h2 style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--color-text)', marginBottom: '0.75rem' }}>
-                    신청 실패를 줄이는 실무형 자료
+                    함께 읽을 운영 자료
                 </h2>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.8rem' }}>
                     {[
-                        ['/application-documents', '신청 전 서류 준비 체크리스트', '주민등록, 가족관계, 임대차, 소득 자료처럼 자주 필요한 서류를 신청 상황별로 정리합니다.'],
-                        ['/income-check', '소득인정액 확인 전 알아야 할 것', '복지 신청에서 소득과 재산이 어떻게 다르게 보이는지, 상담 전 정리할 항목을 안내합니다.'],
-                        ['/duplicate-support', '중복 지원 여부 확인 방법', '비슷한 목적의 급여와 바우처가 있을 때 먼저 확인해야 할 기준을 정리합니다.'],
-                        ['/rejection-reasons', '신청이 반려되는 흔한 이유', '서류 누락, 명의 불일치, 주소 문제처럼 현장에서 자주 막히는 지점을 점검합니다.'],
+                        ['/checklist', '배포 전 확인 체크리스트', 'DNS, 메타데이터, sitemap, 캐시, 실제 도메인 확인을 한 흐름으로 점검합니다.'],
+                        ['/glossary', '운영 용어 짧은 설명', 'DNS, TTL, CDN, Cache-Control, Core Web Vitals 같은 용어를 운영자 관점으로 풉니다.'],
+                        ['/editorial-policy', '편집 원칙', '공식 문서 확인, 검토일, 정정 요청, 광고와 편집 독립성 기준을 공개합니다.'],
+                        ['/about', 'CloudPlare 소개', '이 사이트가 어떤 회사의 공식 서비스가 아니라 독립 운영 노트라는 점을 설명합니다.'],
                     ].map(([href, title, description]) => (
                         <Link key={href} href={href} style={{ textDecoration: 'none' }}>
-                            <article className="guide-card" style={{
+                            <article className="note-card" style={{
                                 backgroundColor: 'var(--color-surface)',
                                 border: '1px solid var(--color-border)',
                                 borderRadius: 'var(--radius-md)',
@@ -186,33 +187,8 @@ export default async function Home() {
                 </div>
             </section>
 
-            <section style={{
-                marginTop: '2.4rem',
-                backgroundColor: 'var(--color-surface)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius-md)',
-                padding: '1.2rem',
-            }}>
-                <h2 style={{ fontSize: '1rem', fontWeight: 850, color: 'var(--color-text)', marginBottom: '0.45rem' }}>
-                    공공서비스 검색은 참고 도구로 제공합니다
-                </h2>
-                <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.86rem', lineHeight: 1.65 }}>
-                    정부24 API 검색 결과는 사용자가 추가 제도를 찾아볼 수 있도록 제공하는 보조 기능입니다.
-                    검색 결과의 세부 조건과 신청 가능 여부는 각 기관의 공식 신청 화면에서 다시 확인해야 합니다.
-                </p>
-                <Link href="/search" style={{
-                    display: 'inline-flex',
-                    marginTop: '0.8rem',
-                    color: 'var(--color-primary)',
-                    fontWeight: 750,
-                    fontSize: '0.86rem',
-                }}>
-                    공공서비스 검색 열기 →
-                </Link>
-            </section>
-
             <style dangerouslySetInnerHTML={{ __html: `
-                .guide-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -4px rgba(0,0,0,0.08); border-color: var(--color-border-hover) !important; }
+                .note-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -4px rgba(0,0,0,0.08); border-color: var(--color-border-hover) !important; }
             `}} />
         </div>
     );

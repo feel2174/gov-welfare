@@ -1,13 +1,13 @@
 import { MetadataRoute } from 'next'
-import { getIndexableGuides } from '@/lib/policies'
+import { getAllNotes } from '@/lib/notes'
 import { SITE_URL } from '@/lib/site'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const guides = await getIndexableGuides();
+  const notes = getAllNotes();
   const baseUrl = SITE_URL;
 
-  const guideUrls = guides.map((guide) => ({
-    url: `${baseUrl}/guide/${guide.id}`,
+  const noteUrls = notes.map((note) => ({
+    url: `${baseUrl}/notes/${note.slug}`,
     lastModified: new Date(),
     changeFrequency: 'monthly' as const,
     priority: 0.8,
@@ -21,7 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/guide`,
+      url: `${baseUrl}/notes`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.9,
@@ -33,30 +33,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.75,
     },
     {
-      url: `${baseUrl}/application-documents`,
+      url: `${baseUrl}/glossary`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.72,
     },
-    {
-      url: `${baseUrl}/income-check`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.72,
-    },
-    {
-      url: `${baseUrl}/duplicate-support`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.72,
-    },
-    {
-      url: `${baseUrl}/rejection-reasons`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.72,
-    },
-    ...guideUrls,
+    ...noteUrls,
     {
       url: `${baseUrl}/about`,
       lastModified: new Date(),
