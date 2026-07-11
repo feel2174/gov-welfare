@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getAllNotes, getNoteBySlug } from '@/lib/notes';
-import { SITE_NAME, SITE_URL } from '@/lib/site';
+import { AUTHOR_NAME, SITE_NAME, SITE_URL } from '@/lib/site';
 
 type NotePageProps = {
   params: Promise<{ slug: string }>;
@@ -53,7 +53,7 @@ export default async function NotePage({ params }: NotePageProps) {
     description: note.description,
     datePublished: note.publishedAt,
     dateModified: note.reviewedAt,
-    author: { '@type': 'Organization', name: SITE_NAME },
+    author: { '@type': 'Person', name: AUTHOR_NAME },
     publisher: { '@type': 'Organization', name: SITE_NAME },
     mainEntityOfPage: `${SITE_URL}/notes/${note.slug}`,
   };
@@ -71,10 +71,34 @@ export default async function NotePage({ params }: NotePageProps) {
         </span>
         <h1 style={{ fontSize: '1.55rem', lineHeight: 1.35, fontWeight: 950, marginBottom: '0.7rem', letterSpacing: 0 }}>{note.title}</h1>
         <p style={{ color: 'var(--color-text-muted)', fontSize: '0.82rem', marginBottom: '0.9rem' }}>
-          CloudPlare 편집 노트 · 최초 작성 {note.publishedAt} · 최종 검토 {note.reviewedAt} · {note.readingMinutes}분 읽기
+          쓴 사람 {AUTHOR_NAME} · 최초 작성 {note.publishedAt} · 최종 검토 {note.reviewedAt} · {note.readingMinutes}분 읽기
         </p>
         <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', lineHeight: 1.75 }}>{note.summary}</p>
       </header>
+
+      <section style={{ marginBottom: '2rem' }}>
+        <h2 style={{ fontSize: '0.95rem', fontWeight: 850, marginBottom: '0.7rem', color: 'var(--color-text)' }}>한눈에 보는 흐름</h2>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem' }}>
+          {note.diagram.map((step, i) => (
+            <span key={step} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{
+                display: 'inline-block',
+                backgroundColor: 'var(--color-primary-light)',
+                color: 'var(--color-primary)',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-sm)',
+                padding: '0.55rem 0.85rem',
+                fontSize: '0.82rem',
+                fontWeight: 750,
+                lineHeight: 1.45,
+              }}>{step}</span>
+              {i < note.diagram.length - 1 && (
+                <span style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }} aria-hidden="true">→</span>
+              )}
+            </span>
+          ))}
+        </div>
+      </section>
 
       <aside style={{ backgroundColor: '#f8fafc', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '1rem 1.1rem', marginBottom: '2rem' }}>
         <h2 style={{ fontSize: '0.95rem', fontWeight: 850, marginBottom: '0.55rem' }}>이 노트에서 확인할 것</h2>

@@ -17,6 +17,7 @@ export interface CloudNote {
   reviewedAt: string;
   readingMinutes: number;
   summary: string;
+  diagram: string[];
   sections: NoteSection[];
   checklist: string[];
   sources: NoteSource[];
@@ -32,6 +33,7 @@ export const notes: CloudNote[] = [
     reviewedAt: '2026-06-08',
     readingMinutes: 7,
     summary: '도메인을 옮기거나 DNS를 정리할 때 가장 늦게 발견되는 문제는 메일입니다. SPF, DKIM, DMARC는 웹 접속과 무관해 보이지만, 누락되면 정상적인 메일이 스팸으로 분류되거나 발신 자체가 막힙니다.',
+    diagram: ['SPF TXT 레코드 하나로 통합', 'DKIM 선택자 등록', 'DMARC p=none 모니터링', 'quarantine → reject 단계 강화'],
     sections: [
       {
         heading: '메일도 도메인 신뢰의 일부다',
@@ -77,6 +79,7 @@ export const notes: CloudNote[] = [
     reviewedAt: '2026-06-08',
     readingMinutes: 7,
     summary: '이미지는 작은 사이트의 페이지 용량 중 가장 큰 비중을 차지하는 경우가 많습니다. 포맷과 크기를 콘텐츠 성격에 맞게 정리하면 별도 도구 없이도 로딩 속도와 레이아웃 안정성을 함께 개선할 수 있습니다.',
+    diagram: ['사진/아이콘 포맷 구분(WebP·SVG)', '표시 크기에 맞게 리사이즈', 'width/height·aspect-ratio 지정', '첫 화면 밖은 lazy loading'],
     sections: [
       {
         heading: '이미지 종류마다 맞는 포맷이 다르다',
@@ -126,6 +129,7 @@ export const notes: CloudNote[] = [
     reviewedAt: '2026-06-09',
     readingMinutes: 7,
     summary: '본문이 많은 사이트에서는 폰트 로딩 방식이 체감 속도와 레이아웃 안정성에 직접 영향을 줍니다. 폰트를 어떻게 불러오고, 도착하기 전까지 무엇을 보여줄지 미리 정해두면 두 문제를 함께 줄일 수 있습니다.',
+    diagram: ['font-display(swap/optional) 지정', '대체 폰트 스택 구성', '외부 CDN 요청 수 확인', 'CLS 재측정'],
     sections: [
       {
         heading: '폰트가 늦게 도착하면 두 가지 문제가 생긴다',
@@ -168,6 +172,7 @@ export const notes: CloudNote[] = [
     reviewedAt: '2026-06-10',
     readingMinutes: 8,
     summary: '보안 헤더는 큰 서비스만의 설정이 아닙니다. 정적 콘텐츠 사이트라도 몇 가지 헤더만 추가하면 스크립트 삽입이나 클릭재킹 같은 흔한 위험을 줄일 수 있습니다. 다만 한 번에 모두 적용하면 사이트가 깨질 수 있어 순서가 중요합니다.',
+    diagram: ['CSP Report-Only로 시작', '허용 출처 목록 정리', '차단 모드로 전환', 'Referrer/Permissions-Policy 적용', '배포 후 응답 헤더 재확인'],
     sections: [
       {
         heading: '정적 사이트도 헤더로 스스로를 보호한다',
@@ -222,6 +227,7 @@ export const notes: CloudNote[] = [
     reviewedAt: '2026-06-10',
     readingMinutes: 6,
     summary: '404 페이지는 실수의 흔적이 아니라 방문자가 다음 행동을 정할 수 있게 돕는 안내판입니다. 링크 점검을 배포 후 한 번이 아니라 주기적인 루틴으로 만들면 사이트 전체의 신뢰도가 천천히 올라갑니다.',
+    diagram: ['404에 홈/목록 링크 제공', '전체 홈 리다이렉트 지양', '주소 변경은 개별 리다이렉트', '분기별 링크 점검 루틴'],
     sections: [
       {
         heading: '404는 길을 잃었다는 신호다',
@@ -264,6 +270,7 @@ export const notes: CloudNote[] = [
     reviewedAt: '2026-06-11',
     readingMinutes: 7,
     summary: '큰 장애는 보통 작은 신호가 쌓인 뒤에 드러납니다. 접속 로그나 기본 분석 도구의 상태 코드와 트래픽 추이를 평소에 한 번씩 보는 습관만으로도, 문제가 커지기 전에 알아챌 수 있는 경우가 많습니다.',
+    diagram: ['평소 트래픽·상태코드 파악', '4xx/5xx/3xx 각각 다르게 확인', '사람 트래픽과 봇 트래픽 구분', '이상 패턴 기록'],
     sections: [
       {
         heading: '로그는 거창한 도구가 아니어도 된다',
@@ -312,6 +319,7 @@ export const notes: CloudNote[] = [
     reviewedAt: '2026-06-09',
     readingMinutes: 8,
     summary: '도메인 연결 문제는 대부분 배포 도구보다 DNS 변경 순서에서 시작됩니다. 이 글은 레코드를 고치기 전에 현재 상태를 기록하고, 변경 범위를 좁히고, 전파 시간을 기다리는 현실적인 절차를 다룹니다.',
+    diagram: ['변경 전 레코드 스냅샷', 'A/CNAME/TXT/MX 역할 구분', 'TTL 고려해 일정 여유', '여러 DNS 조회 도구로 교차 확인'],
     sections: [
       {
         heading: 'DNS 변경은 배포 버튼보다 느리다',
@@ -363,6 +371,7 @@ export const notes: CloudNote[] = [
     reviewedAt: '2026-06-09',
     readingMinutes: 8,
     summary: '정적 사이트는 서버가 단순한 대신 작은 누락이 그대로 공개됩니다. 배포 직전 사람이 직접 확인해야 하는 항목을 운영자 관점으로 정리했습니다.',
+    diagram: ['title/description 현재 주제와 일치 확인', 'sitemap엔 핵심 URL만', 'robots가 sitemap 위치 안내', '배포 후 실제 도메인 재확인'],
     sections: [
       {
         heading: '정적 사이트의 장점은 단순함이고 약점도 단순함이다',
@@ -414,6 +423,7 @@ export const notes: CloudNote[] = [
     reviewedAt: '2026-06-10',
     readingMinutes: 9,
     summary: '캐시는 속도를 올리지만 잘못 쓰면 오래된 화면을 배포합니다. 헤더 이름을 외우기보다 어떤 리소스를 얼마나 믿고 재사용할지 결정하는 관점이 필요합니다.',
+    diagram: ['리소스 성격별 캐시 정책 구분', 'no-cache vs no-store 구분', '정적 자산은 길게, HTML은 짧게', 's-maxage(CDN)와 max-age(브라우저) 분리'],
     sections: [
       {
         heading: '캐시는 저장이 아니라 약속이다',
@@ -465,6 +475,7 @@ export const notes: CloudNote[] = [
     reviewedAt: '2026-06-10',
     readingMinutes: 8,
     summary: 'CDN은 느린 서버를 감추는 도구가 아니라 응답을 여러 위치에서 재사용하는 계층입니다. 작은 사이트에서 흔히 생기는 오해를 실제 점검 순서로 풀었습니다.',
+    diagram: ['원본/CDN 어느 계층이 오래됐는지 분리', '전체 삭제보다 경로 단위 삭제', '쿼리 문자열·쿠키의 캐시 키 영향 확인', '개인화 응답은 공유 캐시 제외'],
     sections: [
       {
         heading: 'CDN은 배포물을 한 번 더 들고 있다',
@@ -516,6 +527,7 @@ export const notes: CloudNote[] = [
     reviewedAt: '2026-06-11',
     readingMinutes: 8,
     summary: '성능 점수는 목적이 아니라 증상 지도입니다. 작은 사이트 운영자가 Core Web Vitals를 읽고 개선 우선순위를 정하는 방법을 정리했습니다.',
+    diagram: ['LCP·INP·CLS 중 원인 지표 구분', '실험실 점수와 현장 데이터 함께 보기', '이미지·폰트부터 우선 점검', '변경 전후 기록'],
     sections: [
       {
         heading: '세 지표는 각각 다른 불편을 말한다',
@@ -567,6 +579,7 @@ export const notes: CloudNote[] = [
     reviewedAt: '2026-06-11',
     readingMinutes: 8,
     summary: '도메인은 접속만 되면 끝이 아닙니다. 여러 주소가 같은 페이지를 가리킬 때 어떤 주소를 기준으로 삼을지 정해야 검색과 사용자 경험이 안정됩니다.',
+    diagram: ['기준 주소 하나로 통일', '인증서 → 리다이렉트 → HSTS 순서 점검', 'canonical·sitemap·내부링크 일치', '리다이렉트 체인 최소화'],
     sections: [
       {
         heading: '주소가 여러 개면 기준 주소를 정한다',
@@ -618,6 +631,7 @@ export const notes: CloudNote[] = [
     reviewedAt: '2026-06-12',
     readingMinutes: 9,
     summary: 'Next.js는 앱도 만들 수 있지만 작은 문서 사이트에도 잘 맞습니다. 다만 동적 기능을 줄이고 정적 페이지 품질을 관리해야 오래 안정적으로 운영할 수 있습니다.',
+    diagram: ['가능한 페이지는 정적 생성', 'layout/개별 페이지 metadata 역할 분리', '삭제한 라우트 sitemap에서 제외', '빌드 결과·실도메인 재확인'],
     sections: [
       {
         heading: '콘텐츠 사이트는 정적으로 생각한다',
@@ -669,6 +683,7 @@ export const notes: CloudNote[] = [
     reviewedAt: '2026-06-12',
     readingMinutes: 8,
     summary: '장애 기록은 큰 회사만 쓰는 문서가 아닙니다. 혼자 운영하는 작은 사이트도 짧은 기록이 쌓이면 같은 실수를 줄이고 사이트 품질을 높일 수 있습니다.',
+    diagram: ['장애 시작~복구 시간순 기록', '영향 범위(URL·기기·지역) 분리', '가설과 실제 원인 구분', '다음 배포 전 개선 항목 하나 확정'],
     sections: [
       {
         heading: '기록의 목적은 책임 추궁이 아니라 재현 방지다',
@@ -720,6 +735,7 @@ export const notes: CloudNote[] = [
     reviewedAt: '2026-06-12',
     readingMinutes: 7,
     summary: '“로컬에서는 되는데 배포하면 안 돼요”라는 문제의 상당수는 코드가 아니라 환경변수에서 시작됩니다. 환경마다 어떤 값이 필요한지 정리해두면, 장애가 났을 때 가장 먼저 확인할 곳이 명확해집니다.',
+    diagram: ['하드코딩된 값을 환경변수로 분리', '로컬 .env ↔ 배포 환경 값 동기화', 'NEXT_PUBLIC_ 공개/비공개 구분', '이번 배포 변경 변수 목록 기록'],
     sections: [
       {
         heading: '환경변수는 코드와 분리된 설정이다',

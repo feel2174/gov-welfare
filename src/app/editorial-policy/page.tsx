@@ -1,4 +1,4 @@
-import { CONTACT_EMAIL, CONTENT_REVIEWED_AT } from '@/lib/site';
+import { AUTHOR_NAME, CONTACT_EMAIL, CONTENT_REVIEWED_AT } from '@/lib/site';
 
 export const metadata = {
   title: '편집 원칙',
@@ -18,7 +18,7 @@ export default function EditorialPolicyPage() {
 
       <h2 style={h2}>1. 작성 목적</h2>
       <p style={p}>
-        CloudPlare는 작은 웹사이트 운영자가 DNS, 배포, 캐시, 성능, 장애 대응을 이해하는 데 필요한 실무형 설명을 제공합니다.
+        CloudPlare는 {AUTHOR_NAME}이 혼자 운영하는 사이트로, 작은 웹사이트 운영자가 DNS, 배포, 캐시, 성능, 장애 대응을 이해하는 데 필요한 실무형 설명을 제공합니다.
         특정 제품 구매나 광고 클릭을 유도하기보다, 운영자가 직접 확인할 수 있는 판단 기준을 정리하는 것을 우선합니다.
       </p>
 

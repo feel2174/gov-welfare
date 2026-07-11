@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { CONTACT_EMAIL, SITE_NAME } from '@/lib/site';
+import { AUTHOR_NAME, CONTACT_EMAIL, SITE_NAME } from '@/lib/site';
 
 export const metadata = {
   title: '사이트 소개',
@@ -16,6 +16,20 @@ export default function AboutPage() {
         <h1 style={{ fontSize: '1.6rem', fontWeight: 900, marginBottom: '0.5rem' }}>{SITE_NAME} 소개</h1>
         <p style={{ ...p, marginBottom: 0 }}>작은 웹사이트를 직접 운영하는 사람을 위한 클라우드 운영 기록 사이트입니다.</p>
       </header>
+
+      <section style={{ marginBottom: '2rem' }}>
+        <h2 style={h2}>누가 쓰나요?</h2>
+        <p style={p}>
+          이 사이트는 {AUTHOR_NAME}이 혼자 운영하고 있어요. 편집팀이나 필진 같은 건 따로 없고, 제가 직접 사이트 몇 개를 운영하면서 겪은 일을 그때그때 정리해서 올립니다.
+        </p>
+        <p style={p}>
+          도메인 옮기다가 메일이 전부 스팸함으로 빠져서 한참 헤맨 적도 있고, 분명히 배포는 새로 했는데 화면은 그대로라 CDN 캐시 탓인 줄도 모르고 코드만 다시 들여다본 적도 있어요.
+          그런 일 겪을 때마다 다음엔 안 헤매려고 남기는 메모에 가까운 사이트라고 보시면 됩니다.
+        </p>
+        <p style={p}>
+          그래서 완벽하게 정리된 글이라기보다, 저처럼 작은 사이트를 혼자 굴리는 분들이 같은 삽질을 덜 하시라고 쓰는 글입니다. 틀린 내용 발견하시면 아래 문의처로 알려주세요, 바로 고칠게요.
+        </p>
+      </section>
 
       <section style={{ marginBottom: '2rem' }}>
         <h2 style={h2}>무엇을 다루나요?</h2>
