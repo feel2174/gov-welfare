@@ -68,11 +68,26 @@ export default async function NotePage({ params }: NotePageProps) {
       : {}),
   };
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: '홈', item: SITE_URL },
+      { '@type': 'ListItem', position: 2, name: '운영 노트', item: `${SITE_URL}/notes` },
+      { '@type': 'ListItem', position: 3, name: note.title, item: `${SITE_URL}/notes/${note.slug}` },
+    ],
+  };
+
   return (
     <article style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)', padding: '2rem 1.5rem' }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
-      <nav style={{ marginBottom: '1.5rem' }}>
-        <Link href="/notes" style={{ color: 'var(--color-text-secondary)', fontWeight: 750, fontSize: '0.88rem' }}>← 운영 노트 목록</Link>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      <nav aria-label="breadcrumb" style={{ marginBottom: '1.5rem', fontSize: '0.82rem', color: 'var(--color-text-muted)' }}>
+        <Link href="/" style={{ color: 'var(--color-text-secondary)', fontWeight: 600 }}>홈</Link>
+        <span style={{ margin: '0 0.4rem' }}>›</span>
+        <Link href="/notes" style={{ color: 'var(--color-text-secondary)', fontWeight: 600 }}>운영 노트</Link>
+        <span style={{ margin: '0 0.4rem' }}>›</span>
+        <span style={{ color: 'var(--color-text)', fontWeight: 700 }}>{note.title}</span>
       </nav>
 
       <header style={{ paddingBottom: '1.5rem', borderBottom: '1px solid var(--color-border)', marginBottom: '1.8rem' }}>
