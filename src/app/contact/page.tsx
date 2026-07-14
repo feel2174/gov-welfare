@@ -3,6 +3,15 @@ import { CONTACT_EMAIL } from '@/lib/site';
 export const metadata = {
   title: '문의하기',
   description: 'CloudPlare 운영 노트의 오류 제보, 정정 요청, 일반 문의를 보내는 페이지입니다.',
+  alternates: {
+    canonical: '/contact',
+  },
+  openGraph: {
+    type: 'website',
+    url: '/contact',
+    title: '문의하기 | CloudPlare',
+    description: 'CloudPlare 운영 노트의 오류 제보, 정정 요청, 일반 문의를 보내는 페이지입니다.',
+  },
 };
 
 export default function ContactPage() {

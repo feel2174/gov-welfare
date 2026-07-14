@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getAllNotes, getNoteBySlug } from '@/lib/notes';
 import { AUTHOR_NAME, SITE_NAME, SITE_URL } from '@/lib/site';
+import CodeBlock from '@/components/CodeBlock';
 
 type NotePageProps = {
   params: Promise<{ slug: string }>;
@@ -56,6 +58,9 @@ export default async function NotePage({ params }: NotePageProps) {
     author: { '@type': 'Person', name: AUTHOR_NAME },
     publisher: { '@type': 'Organization', name: SITE_NAME },
     mainEntityOfPage: `${SITE_URL}/notes/${note.slug}`,
+    ...(note.images && note.images.length > 0
+      ? { image: note.images.map((image) => `${SITE_URL}${image.src}`) }
+      : {}),
   };
 
   return (
@@ -76,29 +81,31 @@ export default async function NotePage({ params }: NotePageProps) {
         <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', lineHeight: 1.75 }}>{note.summary}</p>
       </header>
 
-      <section style={{ marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '0.95rem', fontWeight: 850, marginBottom: '0.7rem', color: 'var(--color-text)' }}>한눈에 보는 흐름</h2>
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem' }}>
-          {note.diagram.map((step, i) => (
-            <span key={step} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{
-                display: 'inline-block',
-                backgroundColor: 'var(--color-primary-light)',
-                color: 'var(--color-primary)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius-sm)',
-                padding: '0.55rem 0.85rem',
-                fontSize: '0.82rem',
-                fontWeight: 750,
-                lineHeight: 1.45,
-              }}>{step}</span>
-              {i < note.diagram.length - 1 && (
-                <span style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }} aria-hidden="true">→</span>
-              )}
-            </span>
-          ))}
-        </div>
-      </section>
+      {note.diagram && note.diagram.length > 0 && (
+        <section style={{ marginBottom: '2rem' }}>
+          <h2 style={{ fontSize: '0.95rem', fontWeight: 850, marginBottom: '0.7rem', color: 'var(--color-text)' }}>한눈에 보는 흐름</h2>
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem' }}>
+            {note.diagram.map((step, i) => (
+              <span key={step} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{
+                  display: 'inline-block',
+                  backgroundColor: 'var(--color-primary-light)',
+                  color: 'var(--color-primary)',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: 'var(--radius-sm)',
+                  padding: '0.55rem 0.85rem',
+                  fontSize: '0.82rem',
+                  fontWeight: 750,
+                  lineHeight: 1.45,
+                }}>{step}</span>
+                {note.diagram && i < note.diagram.length - 1 && (
+                  <span style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }} aria-hidden="true">→</span>
+                )}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
 
       <aside style={{ backgroundColor: '#f8fafc', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '1rem 1.1rem', marginBottom: '2rem' }}>
         <h2 style={{ fontSize: '0.95rem', fontWeight: 850, marginBottom: '0.55rem' }}>이 노트에서 확인할 것</h2>
@@ -113,23 +120,50 @@ export default async function NotePage({ params }: NotePageProps) {
         {note.sections.map((section) => (
           <section key={section.heading} style={{ marginBottom: '2rem' }}>
             <h2 style={{ fontSize: '1.18rem', fontWeight: 900, marginBottom: '0.8rem', lineHeight: 1.45 }}>{section.heading}</h2>
-            {section.body.map((paragraph) => (
-              <p key={paragraph} style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', lineHeight: 1.9, marginBottom: '0.85rem' }}>
-                {paragraph}
-              </p>
-            ))}
+            {section.body.map((item, i) =>
+              typeof item === 'string' ? (
+                <p key={i} style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', lineHeight: 1.9, marginBottom: '0.85rem' }}>
+                  {item}
+                </p>
+              ) : (
+                <CodeBlock key={i} content={item.content} label={item.label} />
+              )
+            )}
           </section>
         ))}
       </div>
 
-      <section style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.4rem', marginTop: '2.2rem' }}>
-        <h2 style={{ fontSize: '1.05rem', fontWeight: 900, marginBottom: '0.7rem' }}>운영 체크리스트</h2>
-        <ul style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', lineHeight: 1.85, paddingLeft: '1.1rem' }}>
-          {note.checklist.map((item) => (
-            <li key={item}>{item}</li>
+      {note.images && note.images.length > 0 && (
+        <section style={{ marginBottom: '2rem' }}>
+          {note.images.map((image) => (
+            <figure key={image.src} style={{ marginBottom: '1rem' }}>
+              <Image
+                src={image.src}
+                alt={image.alt}
+                width={1200}
+                height={675}
+                style={{ width: '100%', height: 'auto', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}
+              />
+              {image.caption && (
+                <figcaption style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginTop: '0.4rem', textAlign: 'center' }}>
+                  {image.caption}
+                </figcaption>
+              )}
+            </figure>
           ))}
-        </ul>
-      </section>
+        </section>
+      )}
+
+      {note.checklist && note.checklist.length > 0 && (
+        <section style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.4rem', marginTop: '2.2rem' }}>
+          <h2 style={{ fontSize: '1.05rem', fontWeight: 900, marginBottom: '0.7rem' }}>운영 체크리스트</h2>
+          <ul style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', lineHeight: 1.85, paddingLeft: '1.1rem' }}>
+            {note.checklist.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.4rem', marginTop: '2rem' }}>
         <h2 style={{ fontSize: '1.05rem', fontWeight: 900, marginBottom: '0.7rem' }}>확인한 공식 자료</h2>
@@ -140,6 +174,17 @@ export default async function NotePage({ params }: NotePageProps) {
           {note.sources.map((source) => (
             <li key={source.url}>
               <a href={source.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', fontWeight: 750 }}>{source.title}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.4rem', marginTop: '2rem' }}>
+        <h2 style={{ fontSize: '1.05rem', fontWeight: 900, marginBottom: '0.7rem' }}>이 글의 수정 이력</h2>
+        <ul style={{ color: 'var(--color-text-secondary)', fontSize: '0.86rem', lineHeight: 1.85, paddingLeft: '1.1rem' }}>
+          {note.revisions.map((revision) => (
+            <li key={revision.date + revision.note}>
+              <span style={{ color: 'var(--color-text-muted)' }}>{revision.date}</span> — {revision.note}
             </li>
           ))}
         </ul>

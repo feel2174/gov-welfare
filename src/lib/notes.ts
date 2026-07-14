@@ -3,9 +3,28 @@ export interface NoteSource {
   url: string;
 }
 
+export interface NoteCodeBlock {
+  type: 'code';
+  content: string;
+  label?: string;
+}
+
+export type NoteBodyItem = string | NoteCodeBlock;
+
 export interface NoteSection {
   heading: string;
-  body: string[];
+  body: NoteBodyItem[];
+}
+
+export interface NoteRevision {
+  date: string;
+  note: string;
+}
+
+export interface NoteImage {
+  src: string;
+  alt: string;
+  caption?: string;
 }
 
 export interface CloudNote {
@@ -17,10 +36,12 @@ export interface CloudNote {
   reviewedAt: string;
   readingMinutes: number;
   summary: string;
-  diagram: string[];
+  diagram?: string[];
   sections: NoteSection[];
-  checklist: string[];
+  checklist?: string[];
   sources: NoteSource[];
+  revisions: NoteRevision[];
+  images?: NoteImage[];
 }
 
 export const notes: CloudNote[] = [
@@ -31,7 +52,7 @@ export const notes: CloudNote[] = [
     category: 'DNS',
     publishedAt: '2026-05-19',
     reviewedAt: '2026-06-08',
-    readingMinutes: 7,
+    readingMinutes: 3,
     summary: '도메인을 옮기거나 DNS를 정리할 때 가장 늦게 발견되는 문제는 메일입니다. SPF, DKIM, DMARC는 웹 접속과 무관해 보이지만, 누락되면 정상적인 메일이 스팸으로 분류되거나 발신 자체가 막힙니다.',
     diagram: ['SPF TXT 레코드 하나로 통합', 'DKIM 선택자 등록', 'DMARC p=none 모니터링', 'quarantine → reject 단계 강화'],
     sections: [
@@ -69,6 +90,9 @@ export const notes: CloudNote[] = [
       { title: 'Google Workspace 고객센터: SPF, DKIM, DMARC로 이메일 인증 강화', url: 'https://support.google.com/a/answer/10583557' },
       { title: 'DMARC.org: Overview', url: 'https://dmarc.org/overview/' },
     ],
+    revisions: [
+      { date: '2026-05-19', note: '최초 게시' },
+    ],
   },
   {
     slug: 'image-format-and-loading-basics',
@@ -77,7 +101,7 @@ export const notes: CloudNote[] = [
     category: '성능',
     publishedAt: '2026-05-21',
     reviewedAt: '2026-06-08',
-    readingMinutes: 7,
+    readingMinutes: 3,
     summary: '이미지는 작은 사이트의 페이지 용량 중 가장 큰 비중을 차지하는 경우가 많습니다. 포맷과 크기를 콘텐츠 성격에 맞게 정리하면 별도 도구 없이도 로딩 속도와 레이아웃 안정성을 함께 개선할 수 있습니다.',
     diagram: ['사진/아이콘 포맷 구분(WebP·SVG)', '표시 크기에 맞게 리사이즈', 'width/height·aspect-ratio 지정', '첫 화면 밖은 lazy loading'],
     sections: [
@@ -119,6 +143,9 @@ export const notes: CloudNote[] = [
       { title: 'MDN: Image file type and format guide', url: 'https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Formats/Image_types' },
       { title: 'web.dev: Optimize Cumulative Layout Shift', url: 'https://web.dev/articles/optimize-cls' },
     ],
+    revisions: [
+      { date: '2026-05-21', note: '최초 게시' },
+    ],
   },
   {
     slug: 'web-font-loading-and-layout-shift',
@@ -126,25 +153,25 @@ export const notes: CloudNote[] = [
     description: '외부 폰트를 불러올 때 텍스트가 늦게 보이거나 자리가 바뀌는 문제를 font-display와 대체 폰트로 줄이는 방법입니다.',
     category: '성능',
     publishedAt: '2026-05-23',
-    reviewedAt: '2026-06-09',
-    readingMinutes: 7,
-    summary: '본문이 많은 사이트에서는 폰트 로딩 방식이 체감 속도와 레이아웃 안정성에 직접 영향을 줍니다. 폰트를 어떻게 불러오고, 도착하기 전까지 무엇을 보여줄지 미리 정해두면 두 문제를 함께 줄일 수 있습니다.',
+    reviewedAt: '2026-07-14',
+    readingMinutes: 2,
+    summary: '본문이 많은 사이트에서는 폰트 로딩 방식이 체감 속도와 레이아웃 안정성에 직접 영향을 줍니다. 자주 받는 질문 세 가지로 정리했습니다.',
     diagram: ['font-display(swap/optional) 지정', '대체 폰트 스택 구성', '외부 CDN 요청 수 확인', 'CLS 재측정'],
     sections: [
       {
-        heading: '폰트가 늦게 도착하면 두 가지 문제가 생긴다',
+        heading: 'Q. 폰트가 늦게 도착하면 어떤 문제가 생기나?',
         body: [
           '웹 폰트가 아직 도착하지 않았을 때 브라우저가 텍스트를 보여주지 않고 기다리면, 방문자는 한동안 빈 화면을 보게 됩니다. 반대로 대체 폰트로 먼저 글자를 보여주고 나중에 지정한 폰트로 바꾸면, 글자 크기와 자간이 달라지면서 줄바꿈 위치와 레이아웃이 움직일 수 있습니다. 둘 다 본문이 많은 사이트에서는 체감 품질에 영향을 줍니다.',
         ],
       },
       {
-        heading: 'font-display로 우선순위를 정한다',
+        heading: 'Q. font-display는 이 문제를 어떻게 해결해주나?',
         body: [
           'font-display 속성은 폰트가 로딩되는 동안 텍스트를 어떻게 보여줄지 정합니다. swap은 대체 폰트로 즉시 보여주고 폰트가 도착하면 교체하며, optional은 빠르게 도착하지 않으면 교체를 포기합니다. 본문 텍스트는 내용을 먼저 전달하는 것이 중요하므로 swap을 사용하는 경우가 많고, 장식적인 폰트는 optional로 두어도 무리가 없습니다.',
         ],
       },
       {
-        heading: '외부 CDN 폰트는 추가 요청을 만든다',
+        heading: 'Q. 외부 CDN에서 폰트를 불러오면 뭐가 달라지나?',
         body: [
           '스타일시트에서 외부 폰트 CDN을 @import로 불러오면, 브라우저는 먼저 스타일시트를 받고 그 안에서 다시 폰트 파일을 요청합니다. 이 과정에서 왕복이 한 번 더 생기므로, 폰트 호스팅 방식을 바꾸거나 preconnect를 함께 쓰는 선택지를 검토할 수 있습니다. CloudPlare도 Pretendard 가변 폰트를 외부 CDN에서 불러오고 있어, 폰트 요청이 본문 렌더링을 늦추지 않는지 주기적으로 확인합니다.',
           '폰트가 늦게 도착해도 읽기에 문제가 없도록, 시스템 폰트로 구성된 대체 폰트 스택을 함께 지정해두는 것이 좋습니다. 대체 폰트와 지정 폰트의 글자 너비가 비슷할수록 교체 시 레이아웃 흔들림이 줄어듭니다.',
@@ -162,6 +189,10 @@ export const notes: CloudNote[] = [
       { title: 'web.dev: Best practices for fonts', url: 'https://web.dev/articles/font-best-practices' },
       { title: 'MDN: font-display', url: 'https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display' },
     ],
+    revisions: [
+      { date: '2026-05-23', note: '최초 게시' },
+      { date: '2026-07-14', note: '소제목을 Q&A 형식으로 전환' },
+    ],
   },
   {
     slug: 'http-security-headers-starter',
@@ -170,7 +201,7 @@ export const notes: CloudNote[] = [
     category: '보안',
     publishedAt: '2026-05-26',
     reviewedAt: '2026-06-10',
-    readingMinutes: 8,
+    readingMinutes: 3,
     summary: '보안 헤더는 큰 서비스만의 설정이 아닙니다. 정적 콘텐츠 사이트라도 몇 가지 헤더만 추가하면 스크립트 삽입이나 클릭재킹 같은 흔한 위험을 줄일 수 있습니다. 다만 한 번에 모두 적용하면 사이트가 깨질 수 있어 순서가 중요합니다.',
     diagram: ['CSP Report-Only로 시작', '허용 출처 목록 정리', '차단 모드로 전환', 'Referrer/Permissions-Policy 적용', '배포 후 응답 헤더 재확인'],
     sections: [
@@ -217,6 +248,9 @@ export const notes: CloudNote[] = [
       { title: 'MDN: Content-Security-Policy', url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy' },
       { title: 'MDN: Referrer-Policy', url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Referrer-Policy' },
     ],
+    revisions: [
+      { date: '2026-05-26', note: '최초 게시' },
+    ],
   },
   {
     slug: 'custom-404-and-broken-link-routine',
@@ -224,41 +258,39 @@ export const notes: CloudNote[] = [
     description: '존재하지 않는 페이지에 방문자가 도착했을 때 보여줄 화면과, 내부·외부 링크를 주기적으로 점검하는 방법을 정리합니다.',
     category: '배포',
     publishedAt: '2026-05-28',
-    reviewedAt: '2026-06-10',
-    readingMinutes: 6,
+    reviewedAt: '2026-07-14',
+    readingMinutes: 3,
     summary: '404 페이지는 실수의 흔적이 아니라 방문자가 다음 행동을 정할 수 있게 돕는 안내판입니다. 링크 점검을 배포 후 한 번이 아니라 주기적인 루틴으로 만들면 사이트 전체의 신뢰도가 천천히 올라갑니다.',
-    diagram: ['404에 홈/목록 링크 제공', '전체 홈 리다이렉트 지양', '주소 변경은 개별 리다이렉트', '분기별 링크 점검 루틴'],
     sections: [
       {
         heading: '404는 길을 잃었다는 신호다',
         body: [
           '오래된 글의 주소가 바뀌거나, 외부에서 잘못된 링크로 들어오거나, 방문자가 URL을 직접 수정하는 경우 404 페이지를 보게 됩니다. 기본 제공되는 404 화면은 오류 메시지만 보여주는 경우가 많아, 방문자는 여기서 그대로 이탈하기 쉽습니다. 홈으로 가는 링크, 검색이나 목록 페이지로 가는 링크를 함께 보여주면 방문자가 다음 행동을 고를 수 있습니다.',
+          '사실 이 사이트도 한동안 커스텀 404 페이지가 없었습니다. 존재하지 않는 주소로 들어오면 Next.js 기본 화면만 뜨는 상태였고, 그 화면에는 홈으로 돌아갈 링크조차 없었습니다. 지금 /notes 목록에 없는 아무 주소로 들어가 보면, 최근 노트 5개와 홈·체크리스트 링크가 뜨는 페이지로 바뀐 걸 볼 수 있습니다. 글로 설명하던 걸 실제로 적용하는 데 생각보다 오래 걸렸습니다.',
         ],
       },
       {
         heading: '전부 홈으로 보내는 리다이렉트의 부작용',
         body: [
           '존재하지 않는 모든 경로를 홈으로 리다이렉트하면 404가 사라진 것처럼 보이지만, 검색엔진 입장에서는 서로 다른 수백 개의 주소가 모두 같은 페이지로 응답하는 것으로 보일 수 있습니다. 이는 사이트 구조를 더 혼란스럽게 만들고, 실제로 삭제된 콘텐츠와 단순히 주소가 바뀐 콘텐츠를 구분하기 어렵게 합니다.',
-          '주소가 바뀐 콘텐츠는 새 주소로 개별 리다이렉트하고, 완전히 사라진 콘텐츠는 404로 응답하는 편이 검색엔진과 방문자 모두에게 더 명확한 신호를 줍니다.',
+          '주소가 바뀐 콘텐츠는 새 주소로 개별 리다이렉트하고, 완전히 사라진 콘텐츠는 404로 응답하는 편이 검색엔진과 방문자 모두에게 더 명확한 신호를 줍니다. 404 페이지 자체는 홈으로 가는 버튼 하나가 아니라, 방문자가 원래 찾으려던 것과 비슷한 콘텐츠 목록을 보여주는 편이 이탈을 줄입니다.',
         ],
       },
       {
         heading: '링크는 한 번 검사하고 끝나지 않는다',
         body: [
           '배포 시점에는 정상이던 외부 링크도 시간이 지나면 대상 페이지가 사라지거나 주소가 바뀔 수 있습니다. 글이 늘어날수록 내부 링크와 외부 링크의 수도 함께 늘어나므로, 새 글을 게시할 때마다 이전 글의 링크까지 다시 확인하기는 어렵습니다. 분기마다 한 번씩이라도 대표 글의 링크 상태를 점검하는 루틴을 만들어두면, 깨진 링크가 오래 방치되는 것을 막을 수 있습니다.',
+          '정리하면 세 가지입니다. 404 페이지에 홈과 목록으로 가는 링크를 반드시 넣을 것, 존재하지 않는 경로를 전부 홈으로 리다이렉트하지 않을 것, 그리고 대표 글의 외부 출처 링크 상태를 주기적으로 점검할 것. 세 번째가 가장 지키기 어렵습니다. 링크가 깨졌다고 알려주는 알림이 따로 없기 때문에, 결국 사람이 주기를 정해두고 직접 열어보는 수밖에 없습니다.',
         ],
       },
-    ],
-    checklist: [
-      '404 페이지에 홈과 목록으로 가는 링크를 제공한다.',
-      '존재하지 않는 모든 경로를 홈으로 리다이렉트하지 않는다.',
-      '주소가 바뀐 콘텐츠는 새 주소로 개별 리다이렉트했다.',
-      '대표 글의 외부 출처 링크 상태를 주기적으로 점검한다.',
-      '404로 응답해야 하는 경로가 실제로 404를 반환하는지 확인했다.',
     ],
     sources: [
       { title: 'MDN: 404 Not Found', url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/404' },
       { title: 'Google Search Central: HTTP network errors and Google Search', url: 'https://developers.google.com/search/docs/crawling-indexing/http-network-errors' },
+    ],
+    revisions: [
+      { date: '2026-05-28', note: '최초 게시' },
+      { date: '2026-07-14', note: '체크리스트 형식을 서술형으로 전환하고, 이 사이트의 실제 404 페이지 적용 사례를 추가' },
     ],
   },
   {
@@ -268,7 +300,7 @@ export const notes: CloudNote[] = [
     category: '운영',
     publishedAt: '2026-05-30',
     reviewedAt: '2026-06-11',
-    readingMinutes: 7,
+    readingMinutes: 2,
     summary: '큰 장애는 보통 작은 신호가 쌓인 뒤에 드러납니다. 접속 로그나 기본 분석 도구의 상태 코드와 트래픽 추이를 평소에 한 번씩 보는 습관만으로도, 문제가 커지기 전에 알아챌 수 있는 경우가 많습니다.',
     diagram: ['평소 트래픽·상태코드 파악', '4xx/5xx/3xx 각각 다르게 확인', '사람 트래픽과 봇 트래픽 구분', '이상 패턴 기록'],
     sections: [
@@ -309,6 +341,9 @@ export const notes: CloudNote[] = [
       { title: 'MDN: HTTP response status codes', url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status' },
       { title: 'Google Search Central: Verifying Googlebot', url: 'https://developers.google.com/search/docs/crawling-indexing/verifying-googlebot' },
     ],
+    revisions: [
+      { date: '2026-05-30', note: '최초 게시' },
+    ],
   },
   {
     slug: 'dns-records-before-deploy',
@@ -317,7 +352,7 @@ export const notes: CloudNote[] = [
     category: 'DNS',
     publishedAt: '2026-06-01',
     reviewedAt: '2026-06-09',
-    readingMinutes: 8,
+    readingMinutes: 4,
     summary: '도메인 연결 문제는 대부분 배포 도구보다 DNS 변경 순서에서 시작됩니다. 이 글은 레코드를 고치기 전에 현재 상태를 기록하고, 변경 범위를 좁히고, 전파 시간을 기다리는 현실적인 절차를 다룹니다.',
     diagram: ['변경 전 레코드 스냅샷', 'A/CNAME/TXT/MX 역할 구분', 'TTL 고려해 일정 여유', '여러 DNS 조회 도구로 교차 확인'],
     sections: [
@@ -361,6 +396,9 @@ export const notes: CloudNote[] = [
       { title: 'MDN: What is a domain name?', url: 'https://developer.mozilla.org/en-US/docs/Learn/Common_questions/Web_mechanics/What_is_a_domain_name' },
       { title: 'ICANN: DNS Basics', url: 'https://www.icann.org/resources/pages/dns-basics-2012-02-25-en' },
     ],
+    revisions: [
+      { date: '2026-06-01', note: '최초 게시' },
+    ],
   },
   {
     slug: 'static-site-release-checklist',
@@ -369,7 +407,7 @@ export const notes: CloudNote[] = [
     category: '배포',
     publishedAt: '2026-06-02',
     reviewedAt: '2026-06-09',
-    readingMinutes: 8,
+    readingMinutes: 3,
     summary: '정적 사이트는 서버가 단순한 대신 작은 누락이 그대로 공개됩니다. 배포 직전 사람이 직접 확인해야 하는 항목을 운영자 관점으로 정리했습니다.',
     diagram: ['title/description 현재 주제와 일치 확인', 'sitemap엔 핵심 URL만', 'robots가 sitemap 위치 안내', '배포 후 실제 도메인 재확인'],
     sections: [
@@ -413,6 +451,9 @@ export const notes: CloudNote[] = [
       { title: 'Next.js: Metadata and OG Images', url: 'https://nextjs.org/docs/app/getting-started/metadata-and-og-images' },
       { title: 'Google Search Central: Build and submit a sitemap', url: 'https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap' },
     ],
+    revisions: [
+      { date: '2026-06-02', note: '최초 게시' },
+    ],
   },
   {
     slug: 'http-cache-control-field-notes',
@@ -421,7 +462,7 @@ export const notes: CloudNote[] = [
     category: '캐시',
     publishedAt: '2026-06-03',
     reviewedAt: '2026-06-10',
-    readingMinutes: 9,
+    readingMinutes: 3,
     summary: '캐시는 속도를 올리지만 잘못 쓰면 오래된 화면을 배포합니다. 헤더 이름을 외우기보다 어떤 리소스를 얼마나 믿고 재사용할지 결정하는 관점이 필요합니다.',
     diagram: ['리소스 성격별 캐시 정책 구분', 'no-cache vs no-store 구분', '정적 자산은 길게, HTML은 짧게', 's-maxage(CDN)와 max-age(브라우저) 분리'],
     sections: [
@@ -465,6 +506,9 @@ export const notes: CloudNote[] = [
       { title: 'MDN: Cache-Control header', url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control' },
       { title: 'HTTP Caching specification', url: 'https://httpwg.org/specs/rfc9111.html' },
     ],
+    revisions: [
+      { date: '2026-06-03', note: '최초 게시' },
+    ],
   },
   {
     slug: 'cdn-cache-mistakes-small-sites',
@@ -473,7 +517,7 @@ export const notes: CloudNote[] = [
     category: 'CDN',
     publishedAt: '2026-06-04',
     reviewedAt: '2026-06-10',
-    readingMinutes: 8,
+    readingMinutes: 3,
     summary: 'CDN은 느린 서버를 감추는 도구가 아니라 응답을 여러 위치에서 재사용하는 계층입니다. 작은 사이트에서 흔히 생기는 오해를 실제 점검 순서로 풀었습니다.',
     diagram: ['원본/CDN 어느 계층이 오래됐는지 분리', '전체 삭제보다 경로 단위 삭제', '쿼리 문자열·쿠키의 캐시 키 영향 확인', '개인화 응답은 공유 캐시 제외'],
     sections: [
@@ -517,6 +561,9 @@ export const notes: CloudNote[] = [
       { title: 'MDN: HTTP caching', url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Caching' },
       { title: 'web.dev: HTTP cache', url: 'https://web.dev/articles/http-cache' },
     ],
+    revisions: [
+      { date: '2026-06-04', note: '최초 게시' },
+    ],
   },
   {
     slug: 'core-web-vitals-operator-view',
@@ -525,7 +572,7 @@ export const notes: CloudNote[] = [
     category: '성능',
     publishedAt: '2026-06-05',
     reviewedAt: '2026-06-11',
-    readingMinutes: 8,
+    readingMinutes: 3,
     summary: '성능 점수는 목적이 아니라 증상 지도입니다. 작은 사이트 운영자가 Core Web Vitals를 읽고 개선 우선순위를 정하는 방법을 정리했습니다.',
     diagram: ['LCP·INP·CLS 중 원인 지표 구분', '실험실 점수와 현장 데이터 함께 보기', '이미지·폰트부터 우선 점검', '변경 전후 기록'],
     sections: [
@@ -569,6 +616,9 @@ export const notes: CloudNote[] = [
       { title: 'web.dev: Core Web Vitals', url: 'https://web.dev/articles/vitals' },
       { title: 'Chrome for Developers: INP', url: 'https://developer.chrome.com/docs/lighthouse/performance/interactive' },
     ],
+    revisions: [
+      { date: '2026-06-05', note: '최초 게시' },
+    ],
   },
   {
     slug: 'https-redirects-domain-canonical',
@@ -577,7 +627,7 @@ export const notes: CloudNote[] = [
     category: '도메인',
     publishedAt: '2026-06-06',
     reviewedAt: '2026-06-11',
-    readingMinutes: 8,
+    readingMinutes: 3,
     summary: '도메인은 접속만 되면 끝이 아닙니다. 여러 주소가 같은 페이지를 가리킬 때 어떤 주소를 기준으로 삼을지 정해야 검색과 사용자 경험이 안정됩니다.',
     diagram: ['기준 주소 하나로 통일', '인증서 → 리다이렉트 → HSTS 순서 점검', 'canonical·sitemap·내부링크 일치', '리다이렉트 체인 최소화'],
     sections: [
@@ -621,6 +671,9 @@ export const notes: CloudNote[] = [
       { title: 'Google Search Central: Canonicalization', url: 'https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls' },
       { title: 'MDN: HTTPS', url: 'https://developer.mozilla.org/en-US/docs/Glossary/HTTPS' },
     ],
+    revisions: [
+      { date: '2026-06-06', note: '최초 게시' },
+    ],
   },
   {
     slug: 'nextjs-deploy-notes-for-small-sites',
@@ -629,7 +682,7 @@ export const notes: CloudNote[] = [
     category: 'Next.js',
     publishedAt: '2026-06-07',
     reviewedAt: '2026-06-12',
-    readingMinutes: 9,
+    readingMinutes: 3,
     summary: 'Next.js는 앱도 만들 수 있지만 작은 문서 사이트에도 잘 맞습니다. 다만 동적 기능을 줄이고 정적 페이지 품질을 관리해야 오래 안정적으로 운영할 수 있습니다.',
     diagram: ['가능한 페이지는 정적 생성', 'layout/개별 페이지 metadata 역할 분리', '삭제한 라우트 sitemap에서 제외', '빌드 결과·실도메인 재확인'],
     sections: [
@@ -673,6 +726,9 @@ export const notes: CloudNote[] = [
       { title: 'Next.js: App Router', url: 'https://nextjs.org/docs/app' },
       { title: 'Next.js: Metadata and OG Images', url: 'https://nextjs.org/docs/app/getting-started/metadata-and-og-images' },
     ],
+    revisions: [
+      { date: '2026-06-07', note: '최초 게시' },
+    ],
   },
   {
     slug: 'small-site-incident-log',
@@ -681,7 +737,7 @@ export const notes: CloudNote[] = [
     category: '운영',
     publishedAt: '2026-06-08',
     reviewedAt: '2026-06-12',
-    readingMinutes: 8,
+    readingMinutes: 3,
     summary: '장애 기록은 큰 회사만 쓰는 문서가 아닙니다. 혼자 운영하는 작은 사이트도 짧은 기록이 쌓이면 같은 실수를 줄이고 사이트 품질을 높일 수 있습니다.',
     diagram: ['장애 시작~복구 시간순 기록', '영향 범위(URL·기기·지역) 분리', '가설과 실제 원인 구분', '다음 배포 전 개선 항목 하나 확정'],
     sections: [
@@ -725,6 +781,9 @@ export const notes: CloudNote[] = [
       { title: 'Google SRE: Postmortem Culture', url: 'https://sre.google/sre-book/postmortem-culture/' },
       { title: 'Atlassian: Incident postmortem guide', url: 'https://www.atlassian.com/incident-management/postmortem' },
     ],
+    revisions: [
+      { date: '2026-06-08', note: '최초 게시' },
+    ],
   },
   {
     slug: 'deploy-environment-variables-checklist',
@@ -732,35 +791,40 @@ export const notes: CloudNote[] = [
     description: '로컬에서는 정상인데 배포 환경에서만 오류가 나는 문제의 흔한 원인인 환경변수 설정을 점검하는 방법입니다.',
     category: '배포',
     publishedAt: '2026-06-09',
-    reviewedAt: '2026-06-12',
-    readingMinutes: 7,
-    summary: '“로컬에서는 되는데 배포하면 안 돼요”라는 문제의 상당수는 코드가 아니라 환경변수에서 시작됩니다. 환경마다 어떤 값이 필요한지 정리해두면, 장애가 났을 때 가장 먼저 확인할 곳이 명확해집니다.',
-    diagram: ['하드코딩된 값을 환경변수로 분리', '로컬 .env ↔ 배포 환경 값 동기화', 'NEXT_PUBLIC_ 공개/비공개 구분', '이번 배포 변경 변수 목록 기록'],
+    reviewedAt: '2026-07-14',
+    readingMinutes: 3,
+    summary: '“로컬에서는 되는데 배포하면 안 돼요”라는 문제의 상당수는 코드가 아니라 환경변수에서 시작됩니다. 자주 나오는 실패 사례 하나를 처음부터 끝까지 따라가 보면 원인을 좁히는 순서가 더 잘 보입니다.',
     sections: [
       {
-        heading: '환경변수는 코드와 분리된 설정이다',
+        heading: '시나리오 — 로컬은 되는데 배포만 안 된다',
         body: [
-          'API 키, 외부 서비스 주소, 사이트 도메인처럼 환경마다 달라질 수 있는 값을 코드에 직접 적어두면, 로컬과 배포 환경이 같은 값을 공유하게 되어 둘 중 하나에서 문제가 생깁니다. 환경변수로 분리해두면 코드는 그대로 두고 환경별로 다른 값을 주입할 수 있습니다.',
+          '빌드는 초록불인데, 배포된 사이트에서 특정 버튼을 누르면 아무 반응이 없습니다. 로컬에서는 같은 버튼이 멀쩡히 동작합니다. 콘솔을 열어보면 클라이언트 컴포넌트 안에서 참조하던 값이 undefined로 찍혀 있습니다.',
+          { type: 'code', label: '문제가 있던 코드 (클라이언트 컴포넌트)', content: `'use client';
+
+// .env에는 있지만 배포 환경변수 설정 화면에는
+// 접두사 없이 SITE_API_BASE로만 등록돼 있었음
+const apiBase = process.env.NEXT_PUBLIC_SITE_API_BASE;
+
+fetch(\`\${apiBase}/submit\`); // apiBase가 undefined → "undefined/submit" 요청` },
         ],
       },
       {
-        heading: '로컬과 배포 환경의 차이가 드러나는 지점',
+        heading: '원인을 좁히는 과정',
         body: [
-          '로컬 개발 서버는 보통 개발자가 직접 만든 .env 파일을 읽지만, 배포 플랫폼은 별도의 환경변수 설정 화면에 값을 등록해야 합니다. 이 둘은 서로 자동으로 동기화되지 않으므로, 로컬에 새 환경변수를 추가했다면 배포 환경에도 같은 이름과 값을 등록했는지 확인해야 합니다.',
-          '환경변수가 누락되면 빌드 자체는 성공하더라도, 해당 값을 사용하는 페이지나 기능에서만 오류가 발생합니다. “빌드는 성공했는데 특정 페이지만 깨진다”는 증상은 환경변수 누락을 의심해볼 만한 신호입니다.',
+          '빌드가 성공했다는 것은 코드 문법에 문제가 없다는 뜻이지, 런타임에 필요한 값이 다 채워졌다는 뜻은 아닙니다. "빌드는 됐는데 특정 기능만 깨진다"는 증상이 나오면, 그 기능이 참조하는 환경변수부터 의심하는 편이 빠릅니다.',
+          '이 사례의 원인은 두 가지가 겹친 것이었습니다. 첫째, 로컬 .env에는 NEXT_PUBLIC_SITE_API_BASE로 등록했지만 배포 플랫폼의 환경변수 설정 화면에는 SITE_API_BASE로 접두사 없이 등록돼 있었습니다. 둘째, Next.js는 NEXT_PUBLIC_ 접두사가 붙은 변수만 클라이언트 번들에 포함시키므로, 접두사가 빠진 변수는 빌드 시점에 조용히 undefined로 치환됩니다. 에러가 나지 않고 그냥 undefined가 되기 때문에 발견이 늦어집니다.',
         ],
       },
       {
-        heading: '공개 변수와 비공개 변수를 구분한다',
+        heading: '고치고 나서 남긴 것',
         body: [
-          'Next.js에서는 이름이 특정 접두사로 시작하는 환경변수만 브라우저로 전달되고, 그렇지 않은 변수는 서버에서만 사용됩니다. 이 구분을 모르고 비공개로 남겨야 할 값에 공개 접두사를 붙이면 클라이언트에 그대로 노출될 수 있고, 반대로 브라우저에서 필요한 값에 접두사를 빠뜨리면 화면에서 undefined로 보이게 됩니다.',
-          '배포 전 점검 목록에 “이번 배포에서 새로 추가하거나 바꾼 환경변수 목록”을 짧게 적어두면, 배포 후 문제가 생겼을 때 가장 먼저 확인할 후보를 바로 좁힐 수 있습니다.',
+          '조치는 배포 환경변수 이름을 로컬 .env와 정확히 일치시키는 것으로 끝났지만, 재발을 막으려면 "이번 배포에서 새로 추가하거나 바꾼 환경변수 목록"을 배포 전 체크리스트에 한 줄로 남기는 습관이 더 중요했습니다. 이름이 다른 것 하나로 몇 시간이 날아갈 수 있다는 걸 알고 나면, 이 한 줄을 아끼기 어려워집니다.',
         ],
       },
     ],
     checklist: [
       '코드에 직접 적힌 API 키나 주소를 환경변수로 분리했다.',
-      '로컬 .env 파일에 추가한 변수를 배포 환경에도 등록했다.',
+      '로컬 .env 파일에 추가한 변수를 배포 환경에도 정확히 같은 이름으로 등록했다.',
       '공개해도 되는 변수와 서버 전용 변수를 구분했다.',
       '브라우저에서 필요한 값에 공개 접두사를 정확히 붙였다.',
       '이번 배포에서 변경한 환경변수 목록을 기록해뒀다.',
@@ -768,7 +832,89 @@ export const notes: CloudNote[] = [
     sources: [
       { title: 'Next.js: Environment Variables', url: 'https://nextjs.org/docs/app/guides/environment-variables' },
     ],
+    revisions: [
+      { date: '2026-06-09', note: '최초 게시' },
+      { date: '2026-07-14', note: '일반론 나열 대신 단일 실패 사례 딥다이브 형식으로 재구성' },
+    ],
   },
+  {
+    slug: 'cloudplare-self-audit-adsense-review',
+    title: '우리 체크리스트로 우리 사이트를 다시 점검한 기록',
+    description: 'CloudPlare가 자체 배포 체크리스트를 자기 사이트에 그대로 적용했을 때 실제로 나온 문제와 조치 내역을 정리합니다.',
+    category: '운영',
+    publishedAt: '2026-07-14',
+    reviewedAt: '2026-07-14',
+    readingMinutes: 3,
+    summary: '체크리스트를 글로만 정리해두고 정작 자기 사이트에는 적용해보지 않으면, 그 체크리스트는 아직 검증된 것이 아닙니다. /checklist에 적어둔 항목을 cloudplare.com 자신에게 그대로 돌려본 기록입니다.',
+    diagram: ['체크리스트를 자기 사이트에 적용', '광고 스크립트 노출 범위 재검토', 'sitemap·메타데이터 재계산', '남은 항목은 미해결로 표시'],
+    sections: [
+      {
+        heading: '왜 다른 사이트가 아니라 우리 사이트부터 봤나',
+        body: [
+          'CloudPlare의 /checklist에는 "기준 주소, canonical, sitemap이 같은 주소를 가리키는지 확인한다", "콘텐츠가 실제로 있는 페이지에서만 광고가 보이는지 확인한다" 같은 항목이 있습니다. 이 문서를 새로 쓰는 대신, 이미 적어둔 항목을 우리 사이트에 그대로 적용해 무엇이 실제로 걸리는지 확인했습니다.',
+          '결과적으로 세 가지 문제를 찾았고, 모두 코드에 남아 있던 것이었습니다. 아래는 발견한 순서 그대로의 기록입니다.',
+        ],
+      },
+      {
+        heading: '문제 1 — 콘텐츠가 거의 없는 화면에도 광고 스크립트가 실렸다',
+        body: [
+          '광고 스크립트(adsbygoogle.js)가 루트 레이아웃의 head에서 전역으로 로드되고 있었습니다. 즉 문의 폼 하나뿐인 /contact, 약관 텍스트만 있는 /privacy·/terms, 그리고 커스텀 404 페이지가 아예 없어 Next.js 기본 404 화면이 뜨던 경로에도 예외 없이 같은 스크립트가 실렸습니다.',
+          '조치는 방문 경로에 따라 스크립트 로드 여부를 판단하는 클라이언트 컴포넌트를 만들고, 콘텐츠가 실질적으로 있는 경로만 화이트리스트로 명시하는 것이었습니다.',
+          { type: 'code', label: 'src/components/AdsenseLoader.tsx (핵심 판정 로직)', content: `const AD_ELIGIBLE_EXACT = ['/', '/checklist', '/glossary', '/about', '/editorial-policy'];
+const AD_ELIGIBLE_PREFIXES = ['/notes'];
+
+function isAdEligible(pathname: string): boolean {
+  if (AD_ELIGIBLE_EXACT.includes(pathname)) return true;
+  return AD_ELIGIBLE_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(\`\${prefix}/\`)
+  );
+}` },
+          '이 방식의 장점은 블랙리스트가 아니라 화이트리스트라는 점입니다. 새 유틸리티 페이지를 추가했을 때 실수로 목록에 안 넣으면 "광고가 안 뜨는" 쪽으로 실패하지, "콘텐츠 없는 화면에 광고가 뜨는" 쪽으로 실패하지 않습니다.',
+        ],
+      },
+      {
+        heading: '문제 2 — sitemap이 실제 수정일과 다른 날짜를 보고했다',
+        body: [
+          'sitemap.ts의 모든 항목이 lastModified를 new Date()로 채우고 있었습니다. 빌드되거나 요청될 때마다 "지금"이 찍히는 구조라, 6월 초에 쓰고 검토가 끝난 글도 sitemap에서는 항상 "방금 수정됨"으로 보였습니다. 개별 글의 JSON-LD에는 실제 검토일(reviewedAt)이 정확히 들어가는데, sitemap과 그 값이 서로 어긋나는 상태였습니다.',
+          { type: 'code', label: '수정 전/후 요약', content: `// 수정 전
+lastModified: new Date()               // 매 빌드마다 "지금"
+
+// 수정 후
+lastModified: new Date(note.reviewedAt) // 실제 검토일 그대로` },
+          '고치고 나니 sitemap의 lastmod 값이 노트별로 2026-06-08부터 2026-06-12까지 실제 검토일 그대로 흩어져 나왔습니다. 크롤러 입장에서는 "이 사이트는 실제로 각 글을 다른 시점에 손봤다"는, 이전보다 훨씬 정직한 신호입니다.',
+        ],
+      },
+      {
+        heading: '문제 3 — 읽기 시간이 실제 글자 수와 무관했다',
+        body: [
+          '각 노트의 readingMinutes 값을 실제 본문 글자 수로 나눠보니 분당 118자에서 351자까지 거의 3배 차이가 났습니다. 가장 긴 글이 오히려 가장 짧은 읽기 시간으로 표시된 경우도 있었습니다. 실제로 계산해서 넣은 값이 아니라 6~9분 사이에서 임의로 채운 값이었다는 뜻입니다.',
+          '분당 400자를 기준으로 요약과 본문 글자 수를 다시 계산해 전체 글의 readingMinutes를 2~4분 범위로 다시 채웠습니다. 숫자가 작아 보일 수 있지만, 실제 분량과 맞는 숫자가 부풀려진 숫자보다 낫다고 판단했습니다.',
+        ],
+      },
+      {
+        heading: '이번 점검에서 남은 것과 남기지 않은 것',
+        body: [
+          '이번에 고친 세 가지는 코드만으로 끝나는 문제였습니다. 반면 실기기에서 320~375px 폭을 직접 확인하는 것, EEA 방문자를 위한 동의관리플랫폼(CMP) 연동, 실제 스크린샷과 명령어 실행 결과를 글에 넣는 것은 코드 수정만으로 끝나지 않아 이번 점검에서는 항목만 확인하고 미해결로 남겨뒀습니다.',
+          '체크리스트를 스스로에게 적용해서 나온 결과를 숨기지 않고 그대로 남기는 것도 이 글의 목적 중 하나입니다. 다음 점검에서 이 글의 "수정 이력"에 추가로 남길 예정입니다.',
+        ],
+      },
+    ],
+    checklist: [
+      '광고 스크립트가 콘텐츠 없는 화면(문의, 정책, 404)에도 실리고 있지 않은지 확인했다.',
+      'sitemap의 lastModified가 실제 콘텐츠 수정일과 일치하는지 확인했다.',
+      '읽기 시간 같은 메타데이터가 실제 콘텐츠 분량과 비례하는지 확인했다.',
+      '전 페이지의 canonical과 OG URL이 자기 자신의 주소를 가리키는지 확인했다.',
+      '고치지 못한 항목은 숨기지 않고 미해결로 기록해뒀다.',
+    ],
+    sources: [
+      { title: 'Google AdSense 고객센터: 게재 광고 배치 정책', url: 'https://support.google.com/adsense/answer/1346295' },
+      { title: 'Google Search Central: 유용하고 신뢰할 수 있는 콘텐츠 만들기', url: 'https://developers.google.com/search/docs/fundamentals/creating-helpful-content' },
+    ],
+    revisions: [
+      { date: '2026-07-14', note: '최초 게시 — 광고 스크립트 노출 범위, sitemap lastModified, readingMinutes 계산 방식 점검 결과 반영' },
+    ],
+  },
+
 ];
 
 export const glossary = [

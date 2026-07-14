@@ -4,6 +4,15 @@ import { AUTHOR_NAME, CONTACT_EMAIL, SITE_NAME } from '@/lib/site';
 export const metadata = {
   title: '사이트 소개',
   description: 'CloudPlare는 작은 웹사이트 운영자를 위한 독립 클라우드 운영 노트입니다.',
+  alternates: {
+    canonical: '/about',
+  },
+  openGraph: {
+    type: 'website',
+    url: '/about',
+    title: '사이트 소개 | CloudPlare',
+    description: 'CloudPlare는 작은 웹사이트 운영자를 위한 독립 클라우드 운영 노트입니다.',
+  },
 };
 
 export default function AboutPage() {
@@ -20,14 +29,15 @@ export default function AboutPage() {
       <section style={{ marginBottom: '2rem' }}>
         <h2 style={h2}>누가 쓰나요?</h2>
         <p style={p}>
-          이 사이트는 {AUTHOR_NAME}이 혼자 운영하고 있어요. 편집팀이나 필진 같은 건 따로 없고, 제가 직접 사이트 몇 개를 운영하면서 겪은 일을 그때그때 정리해서 올립니다.
+          이 사이트는 {AUTHOR_NAME}이 혼자 운영하고 있어요. 편집팀이나 필진 같은 건 따로 없습니다.
+          이미지 압축·WebP 변환 도구인{' '}
+          <a href="https://pixelzipkit.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', fontWeight: 750 }}>pixelzipkit.com</a>
+          {' '}이랑, 프론트엔드 작업하면서 겪은 걸 정리하는 개인 블로그{' '}
+          <a href="https://frontendnote.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', fontWeight: 750 }}>frontendnote.com</a>
+          도 같이 운영하고 있어요. CloudPlare는 그 사이트들을 만들고 배포하면서 자연스럽게 계속 마주치게 되는 도메인, 배포, 캐시, 성능 이야기를 따로 모아둔 곳입니다.
         </p>
         <p style={p}>
-          도메인 옮기다가 메일이 전부 스팸함으로 빠져서 한참 헤맨 적도 있고, 분명히 배포는 새로 했는데 화면은 그대로라 CDN 캐시 탓인 줄도 모르고 코드만 다시 들여다본 적도 있어요.
-          그런 일 겪을 때마다 다음엔 안 헤매려고 남기는 메모에 가까운 사이트라고 보시면 됩니다.
-        </p>
-        <p style={p}>
-          그래서 완벽하게 정리된 글이라기보다, 저처럼 작은 사이트를 혼자 굴리는 분들이 같은 삽질을 덜 하시라고 쓰는 글입니다. 틀린 내용 발견하시면 아래 문의처로 알려주세요, 바로 고칠게요.
+          완벽하게 정리된 글이라기보다, 저처럼 작은 사이트를 혼자 굴리는 분들이 참고할 만한 실무형 메모에 가깝습니다. 틀린 내용 발견하시면 아래 문의처로 알려주세요, 바로 고칠게요.
         </p>
       </section>
 

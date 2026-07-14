@@ -53,3 +53,15 @@ img {
   max-width: 100%;
   display: block;
 }
+
+@media (max-width: 480px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 380px) {
+  html {
+    font-size: 13.5px;
+  }
+}

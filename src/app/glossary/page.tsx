@@ -3,6 +3,15 @@ import { glossary } from '@/lib/notes';
 export const metadata = {
   title: '클라우드 운영 용어집',
   description: 'DNS, TTL, CDN, Cache-Control, Core Web Vitals 등 작은 사이트 운영자가 자주 만나는 용어를 짧게 설명합니다.',
+  alternates: {
+    canonical: '/glossary',
+  },
+  openGraph: {
+    type: 'website',
+    url: '/glossary',
+    title: '클라우드 운영 용어집 | CloudPlare',
+    description: 'DNS, TTL, CDN, Cache-Control, Core Web Vitals 등 작은 사이트 운영자가 자주 만나는 용어를 짧게 설명합니다.',
+  },
 };
 
 export default function GlossaryPage() {

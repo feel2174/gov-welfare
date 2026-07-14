@@ -3,6 +3,15 @@ import { CONTACT_EMAIL } from '@/lib/site';
 export const metadata = {
   title: '이용약관',
   description: 'CloudPlare 이용약관입니다.',
+  alternates: {
+    canonical: '/terms',
+  },
+  openGraph: {
+    type: 'website',
+    url: '/terms',
+    title: '이용약관 | CloudPlare',
+    description: 'CloudPlare 이용약관입니다.',
+  },
 };
 
 export default function TermsOfService() {

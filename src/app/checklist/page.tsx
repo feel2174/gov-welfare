@@ -1,6 +1,15 @@
 export const metadata = {
   title: '배포 전 확인 체크리스트',
   description: '작은 웹사이트를 배포하기 전 DNS, 메타데이터, sitemap, 캐시, 실제 도메인을 확인하는 CloudPlare 체크리스트입니다.',
+  alternates: {
+    canonical: '/checklist',
+  },
+  openGraph: {
+    type: 'website',
+    url: '/checklist',
+    title: '배포 전 확인 체크리스트 | CloudPlare',
+    description: '작은 웹사이트를 배포하기 전 DNS, 메타데이터, sitemap, 캐시, 실제 도메인을 확인하는 CloudPlare 체크리스트입니다.',
+  },
 };
 
 const sections = [

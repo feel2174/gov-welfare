@@ -3,6 +3,15 @@ import { CONTACT_EMAIL } from '@/lib/site';
 export const metadata = {
   title: '개인정보처리방침',
   description: 'CloudPlare 개인정보처리방침입니다.',
+  alternates: {
+    canonical: '/privacy',
+  },
+  openGraph: {
+    type: 'website',
+    url: '/privacy',
+    title: '개인정보처리방침 | CloudPlare',
+    description: 'CloudPlare 개인정보처리방침입니다.',
+  },
 };
 
 export default function PrivacyPolicy() {

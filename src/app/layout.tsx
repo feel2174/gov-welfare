@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Analytics } from '@vercel/analytics/react'
 import { AUTHOR_NAME, SITE_URL, SITE_NAME, SITE_TAGLINE } from '@/lib/site'
+import AdsenseLoader from '@/components/AdsenseLoader'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -11,6 +12,10 @@ export const metadata: Metadata = {
   },
   description: '작은 웹사이트 운영자를 위한 DNS, 배포, 캐시, 성능, 장애 대응 기록을 정리하는 독립 클라우드 운영 노트입니다.',
   keywords: ['CloudPlare', '클라우드 운영', 'DNS', 'CDN', 'HTTP 캐시', '웹 성능', 'Next.js 배포'],
+  metadataBase: new URL(SITE_URL),
+  alternates: {
+    canonical: SITE_URL,
+  },
   openGraph: {
     type: 'website',
     locale: 'ko_KR',
@@ -43,7 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ko" suppressHydrationWarning>
       <head>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8738602180421069" crossOrigin="anonymous"></script>
+        <AdsenseLoader />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}

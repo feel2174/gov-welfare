@@ -3,6 +3,15 @@ import { AUTHOR_NAME, CONTACT_EMAIL, CONTENT_REVIEWED_AT } from '@/lib/site';
 export const metadata = {
   title: '편집 원칙',
   description: 'CloudPlare의 자료 확인, 출처 표시, 검토일, 정정 요청, 광고 독립성 기준입니다.',
+  alternates: {
+    canonical: '/editorial-policy',
+  },
+  openGraph: {
+    type: 'website',
+    url: '/editorial-policy',
+    title: '편집 원칙 | CloudPlare',
+    description: 'CloudPlare의 자료 확인, 출처 표시, 검토일, 정정 요청, 광고 독립성 기준입니다.',
+  },
 };
 
 export default function EditorialPolicyPage() {

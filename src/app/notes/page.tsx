@@ -4,6 +4,15 @@ import { getAllNotes } from '@/lib/notes';
 export const metadata = {
   title: '운영 노트',
   description: 'DNS, 배포, 캐시, 성능, 장애 대응을 작은 웹사이트 운영자 관점으로 정리한 CloudPlare 노트입니다.',
+  alternates: {
+    canonical: '/notes',
+  },
+  openGraph: {
+    type: 'website',
+    url: '/notes',
+    title: '운영 노트 | CloudPlare',
+    description: 'DNS, 배포, 캐시, 성능, 장애 대응을 작은 웹사이트 운영자 관점으로 정리한 CloudPlare 노트입니다.',
+  },
 };
 
 export default function NotesPage() {

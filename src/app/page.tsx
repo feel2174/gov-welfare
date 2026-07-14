@@ -5,6 +5,15 @@ import { CONTENT_REVIEWED_AT } from '@/lib/site';
 export const metadata = {
     title: 'CloudPlare - 클라우드 운영 노트',
     description: 'DNS, 배포, HTTP 캐시, CDN, Core Web Vitals, 장애 기록을 작은 사이트 운영자 관점으로 정리합니다.',
+    alternates: {
+        canonical: '/',
+    },
+    openGraph: {
+        type: 'website',
+        url: '/',
+        title: 'CloudPlare - 클라우드 운영 노트',
+        description: 'DNS, 배포, HTTP 캐시, CDN, Core Web Vitals, 장애 기록을 작은 사이트 운영자 관점으로 정리합니다.',
+    },
 };
 
 export default async function Home() {
