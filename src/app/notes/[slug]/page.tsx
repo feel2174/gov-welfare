@@ -48,6 +48,11 @@ export default async function NotePage({ params }: NotePageProps) {
     notFound();
   }
 
+  const otherNotes = getAllNotes().filter((n) => n.slug !== note.slug);
+  const sameCategory = otherNotes.filter((n) => n.category === note.category);
+  const rest = otherNotes.filter((n) => n.category !== note.category);
+  const relatedNotes = [...sameCategory, ...rest].slice(0, 3);
+
   const articleJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -162,6 +167,22 @@ export default async function NotePage({ params }: NotePageProps) {
               <li key={item}>{item}</li>
             ))}
           </ul>
+        </section>
+      )}
+
+      {relatedNotes.length > 0 && (
+        <section style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.4rem', marginTop: '2rem' }}>
+          <h2 style={{ fontSize: '1.05rem', fontWeight: 900, marginBottom: '0.9rem' }}>관련 노트</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+            {relatedNotes.map((related) => (
+              <Link key={related.slug} href={`/notes/${related.slug}`} style={{ textDecoration: 'none' }}>
+                <article style={{ backgroundColor: '#f8fafc', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', padding: '0.9rem 1rem' }}>
+                  <span style={{ color: 'var(--color-primary)', fontSize: '0.74rem', fontWeight: 800 }}>{related.category}</span>
+                  <h3 style={{ fontSize: '0.92rem', fontWeight: 800, marginTop: '0.25rem', color: 'var(--color-text)' }}>{related.title}</h3>
+                </article>
+              </Link>
+            ))}
+          </div>
         </section>
       )}
 
