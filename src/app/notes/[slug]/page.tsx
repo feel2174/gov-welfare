@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getAllNotes, getNoteBySlug } from '@/lib/notes';
-import { AUTHOR_NAME, SITE_NAME, SITE_URL } from '@/lib/site';
+import { AUTHOR_NAME, AUTHOR_ROLE, AUTHOR_SAME_AS, SITE_NAME, SITE_URL } from '@/lib/site';
 import CodeBlock from '@/components/CodeBlock';
 
 type NotePageProps = {
@@ -60,8 +60,14 @@ export default async function NotePage({ params }: NotePageProps) {
     description: note.description,
     datePublished: note.publishedAt,
     dateModified: note.reviewedAt,
-    author: { '@type': 'Person', name: AUTHOR_NAME },
-    publisher: { '@type': 'Organization', name: SITE_NAME },
+    author: {
+      '@type': 'Person',
+      name: AUTHOR_NAME,
+      jobTitle: AUTHOR_ROLE,
+      url: `${SITE_URL}/about`,
+      sameAs: AUTHOR_SAME_AS,
+    },
+    publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
     mainEntityOfPage: `${SITE_URL}/notes/${note.slug}`,
     ...(note.images && note.images.length > 0
       ? { image: note.images.map((image) => `${SITE_URL}${image.src}`) }

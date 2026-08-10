@@ -75,6 +75,15 @@ export const notes: CloudNote[] = [
         body: [
           'DKIM(DomainKeys Identified Mail)은 발신 메일에 암호화 서명을 추가하고, 수신 서버가 도메인에 등록된 공개키 TXT 레코드로 그 서명을 확인하는 방식입니다. 이메일 제공자가 안내하는 선택자(selector) 이름과 값을 정확히 등록해야 하며, 메일 제공자를 바꾸면 이전 선택자 레코드는 정리하고 새 값을 등록해야 합니다.',
           'DMARC(Domain-based Message Authentication, Reporting and Conformance)는 SPF와 DKIM 검증에 실패한 메일을 어떻게 처리할지 알려주는 정책입니다. 처음에는 p=none으로 설정해 결과를 모니터링만 하고, 정상적인 발신 흐름을 확인한 뒤 quarantine, reject로 단계적으로 강화하는 편이 안전합니다. 처음부터 reject로 시작하면 누락된 발신 경로의 메일이 한꺼번에 막힐 수 있습니다.',
+          { type: 'code', label: 'dig로 현재 SPF·DMARC·DKIM TXT 레코드 확인', content: `$ dig +short TXT example.com
+"v=spf1 include:_spf.google.com ~all"
+
+$ dig +short TXT _dmarc.example.com
+"v=DMARC1; p=none; rua=mailto:dmarc@example.com"
+
+# DKIM 선택자(google)의 공개키 조회
+$ dig +short TXT google._domainkey.example.com
+"v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0B..."` },
         ],
       },
     ],
@@ -109,6 +118,12 @@ export const notes: CloudNote[] = [
         heading: '이미지 종류마다 맞는 포맷이 다르다',
         body: [
           '사진이나 화면을 캡처한 이미지는 WebP나 AVIF처럼 압축률이 높은 포맷이 적합합니다. 같은 화질에서 JPEG보다 파일 크기가 작아지는 경우가 많습니다. 반면 로고나 아이콘처럼 선이 분명한 그래픽은 SVG로 다루면 어떤 화면 크기에서도 흐려지지 않고 파일 크기도 작습니다.',
+          { type: 'code', label: '표시 크기에 맞춰 리사이즈하고 WebP로 변환', content: `# 본문 폭(720px 안팎)에 맞춰 리사이즈 + WebP 변환
+$ cwebp -q 80 -resize 720 0 photo.png -o photo.webp
+
+<img src="/img/photo.webp" width="720" height="405"
+     alt="설명을 담은 대체 텍스트"
+     loading="lazy" decoding="async">` },
         ],
       },
       {
@@ -233,6 +248,11 @@ export const notes: CloudNote[] = [
         heading: '헤더는 적용 후 실제로 확인한다',
         body: [
           '헤더를 설정 파일에 추가했다고 끝나는 것이 아닙니다. 배포 후 브라우저 개발자 도구의 네트워크 탭에서 실제 응답 헤더를 열어, 의도한 값이 실제 도메인에도 적용됐는지 확인해야 합니다. CDN이나 호스팅 플랫폼이 일부 헤더를 자체적으로 추가하거나 덮어쓰는 경우도 있으므로, 로컬 설정과 실제 배포 결과를 함께 봐야 합니다.',
+          { type: 'code', label: 'curl로 실제 배포된 보안 헤더 확인', content: `$ curl -sI https://example.com | grep -iE 'content-security|referrer|permissions|strict-transport'
+content-security-policy-report-only: default-src 'self'
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: camera=(), microphone=(), geolocation=()
+strict-transport-security: max-age=15552000` },
         ],
       },
     ],
@@ -321,6 +341,14 @@ export const notes: CloudNote[] = [
         body: [
           '4xx 응답이 특정 경로에서 갑자기 늘었다면, 외부에서 잘못된 링크로 유입되거나 내부 링크가 깨졌을 가능성을 먼저 봅니다. 5xx 응답이 보인다면 코드, 환경 변수, 배포 설정처럼 서버 쪽 원인을 먼저 의심합니다. 3xx 비율이 갑자기 늘었다면 리다이렉트 규칙이 의도와 다르게 넓은 범위에 적용되고 있을 수 있습니다.',
           '같은 “오류 증가”도 어떤 상태 코드인지에 따라 확인할 곳이 달라지므로, 숫자만 보지 않고 어떤 경로와 상태 코드의 조합인지까지 함께 기록합니다.',
+          { type: 'code', label: '접속 로그에서 상태 코드 분포 빠르게 보기', content: `# 상태 코드별 요청 수 (많은 순)
+$ awk '{print $9}' access.log | sort | uniq -c | sort -rn | head
+   8421 200
+    372 404
+     18 500
+
+# 404가 난 경로 상위 확인
+$ awk '$9==404 {print $7}' access.log | sort | uniq -c | sort -rn | head` },
         ],
       },
       {
@@ -382,6 +410,16 @@ export const notes: CloudNote[] = [
         body: [
           '브라우저 접속 성공만으로 DNS가 완전히 정상이라고 판단하기 어렵습니다. 내 브라우저는 이전 캐시를 들고 있을 수 있고, 사내 네트워크나 통신사 DNS가 다른 응답을 줄 수도 있습니다. 로컬 터미널, 외부 DNS 조회 도구, 모바일 네트워크처럼 서로 다른 경로에서 확인하면 문제 범위를 좁히기 쉽습니다.',
           '문제가 생겼을 때는 “도메인이 안 된다”가 아니라 “루트 도메인의 A 레코드는 새 IP를 보지만 www CNAME은 예전 값을 본다”처럼 관찰한 사실을 분리해 적습니다. 이렇게 적어야 호스팅, DNS, 인증서 중 어느 층을 봐야 하는지 빠르게 결정할 수 있습니다.',
+          { type: 'code', label: '서로 다른 리졸버로 교차 확인', content: `# 로컬 기본 리졸버
+$ dig +short example.com A
+203.0.113.10
+
+# 공개 리졸버로 교차 확인(전파 여부)
+$ dig +short example.com A @1.1.1.1
+203.0.113.10
+
+# www CNAME이 예전 값을 보는지 분리 확인
+$ dig +short www.example.com CNAME @8.8.8.8` },
         ],
       },
     ],
@@ -485,6 +523,14 @@ export const notes: CloudNote[] = [
         body: [
           '파일명에 해시가 들어간 정적 자산은 내용이 바뀌면 URL도 바뀌므로 오래 캐시하기 좋습니다. 반면 HTML 문서는 같은 URL에서 내용이 바뀔 수 있습니다. 글 수정, 메타 변경, 정책 페이지 업데이트가 잦다면 HTML에 너무 긴 max-age를 주면 방문자가 오래된 설명을 볼 수 있습니다.',
           'CDN을 쓰는 경우 브라우저 캐시와 CDN 캐시를 구분해야 합니다. s-maxage는 공유 캐시에 적용되고, max-age는 일반 캐시에 적용됩니다. 둘을 섞어 쓸 때는 어느 계층이 어떤 시간 동안 응답을 들고 있는지 운영 메모에 남겨야 장애 때 빠르게 지울 수 있습니다.',
+          { type: 'code', label: '리소스 성격별 Cache-Control 예', content: `# 해시가 붙은 정적 자산: 오래 + immutable
+Cache-Control: public, max-age=31536000, immutable
+
+# HTML 문서: 저장하되 매번 재검증
+Cache-Control: no-cache
+
+# CDN엔 오래, 브라우저엔 짧게 (s-maxage는 공유 캐시 전용)
+Cache-Control: max-age=0, s-maxage=600, stale-while-revalidate=86400` },
         ],
       },
       {
@@ -526,6 +572,15 @@ export const notes: CloudNote[] = [
         body: [
           '원본 서버에 새 파일이 올라갔는데 방문자는 예전 화면을 볼 수 있습니다. CDN이 이전 응답을 아직 신선하다고 판단하기 때문입니다. 이 상황에서 코드를 계속 다시 배포하면 원인은 그대로인데 변경 이력만 늘어납니다.',
           '먼저 확인할 것은 어느 계층이 오래된 응답을 주는지입니다. 원본 URL, CDN이 붙은 도메인, 브라우저 강력 새로고침, 다른 네트워크를 나눠서 확인하면 원본 문제인지 CDN 문제인지 분리할 수 있습니다.',
+          { type: 'code', label: '응답 헤더로 어느 계층이 오래됐는지 분리', content: `# cf-cache-status가 HIT면 CDN이 옛 응답을 보관 중
+$ curl -sI https://example.com/ | grep -iE 'cf-cache-status|age|last-modified'
+cf-cache-status: HIT
+age: 3600
+
+# 문제 경로만 콕 집어 무효화 (전체 삭제 대신)
+$ curl -X POST "https://api.cdn.example/zones/ZONE/purge_cache" \\
+    -H "Authorization: Bearer $TOKEN" \\
+    -d '{"files":["https://example.com/about"]}'` },
         ],
       },
       {
@@ -595,6 +650,11 @@ export const notes: CloudNote[] = [
         body: [
           '콘텐츠 사이트는 복잡한 앱보다 이미지와 폰트가 성능을 좌우하는 경우가 많습니다. 첫 화면에 큰 이미지를 쓰면 LCP가 느려질 수 있고, 폰트 로딩이 늦으면 텍스트 표시가 지연되거나 레이아웃이 바뀔 수 있습니다. 꼭 필요한 시각 요소만 쓰고, 크기와 비율을 미리 정하는 것이 안정적입니다.',
           '콘텐츠 중심 사이트에서는 화려한 효과보다 읽기 좋은 본문과 빠른 첫 화면이 우선입니다. 글 목록과 상세 페이지는 불필요한 클라이언트 스크립트를 줄이고, 서버에서 정적으로 렌더링되는 구조를 유지하는 편이 안정적입니다.',
+          { type: 'code', label: '실험실 점수 대신 실제 사용자 지표를 코드로 수집', content: `import {onLCP, onINP, onCLS} from 'web-vitals';
+
+onLCP(console.log);   // 좋음 ≤ 2.5s
+onINP(console.log);   // 좋음 ≤ 200ms
+onCLS(console.log);   // 좋음 ≤ 0.1` },
         ],
       },
       {
@@ -657,6 +717,13 @@ export const notes: CloudNote[] = [
         body: [
           'http에서 www로, 다시 https로, 다시 루트로 이동하는 식의 긴 체인은 느리고 관리하기 어렵습니다. 가능하면 한 번의 영구 리다이렉트로 기준 주소에 도착하게 만듭니다. 오래된 경로를 새 경로로 옮길 때도 중간 경로를 여러 개 거치지 않도록 정리합니다.',
           '전면 개편 후에는 기존 주제의 URL이 새 사이트에 남지 않도록 하는 것이 중요합니다. 관련 없는 오래된 URL을 새 콘텐츠로 억지 연결하면 방문자 기대와 실제 페이지가 어긋납니다. 삭제된 주제는 404로 정리하거나, 명확한 새 홈으로 제한적으로 안내하는 편이 낫습니다.',
+          { type: 'code', label: 'curl -sIL로 리다이렉트 체인 추적', content: `$ curl -sIL http://www.example.com | grep -iE '^HTTP|^location'
+HTTP/1.1 301 Moved Permanently
+location: https://example.com/
+HTTP/2 200
+
+# 301 한 번에 기준 주소로 도착하면 정상.
+# 302가 여러 번 이어지면 체인을 줄여야 한다.` },
         ],
       },
     ],
