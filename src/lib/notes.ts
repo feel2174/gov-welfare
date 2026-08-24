@@ -51,7 +51,7 @@ export const notes: CloudNote[] = [
     description: '도메인 메일을 함께 쓰는 작은 사이트가 SPF, DKIM, DMARC 레코드를 점검하고 단계적으로 강화하는 방법을 정리합니다.',
     category: 'DNS',
     publishedAt: '2026-05-19',
-    reviewedAt: '2026-06-08',
+    reviewedAt: '2026-08-24',
     readingMinutes: 3,
     summary: '도메인을 옮기거나 DNS를 정리할 때 가장 늦게 발견되는 문제는 메일입니다. SPF, DKIM, DMARC는 웹 접속과 무관해 보이지만, 누락되면 정상적인 메일이 스팸으로 분류되거나 발신 자체가 막힙니다.',
     diagram: ['SPF TXT 레코드 하나로 통합', 'DKIM 선택자 등록', 'DMARC p=none 모니터링', 'quarantine → reject 단계 강화'],
@@ -77,6 +77,30 @@ export const notes: CloudNote[] = [
           'DMARC(Domain-based Message Authentication, Reporting and Conformance)는 SPF와 DKIM 검증에 실패한 메일을 어떻게 처리할지 알려주는 정책입니다. 처음에는 p=none으로 설정해 결과를 모니터링만 하고, 정상적인 발신 흐름을 확인한 뒤 quarantine, reject로 단계적으로 강화하는 편이 안전합니다. 처음부터 reject로 시작하면 누락된 발신 경로의 메일이 한꺼번에 막힐 수 있습니다.',
         ],
       },
+      {
+        heading: '레코드 실제 값과 조회 방법',
+        body: [
+          '세 레코드는 모두 TXT로 등록되지만 이름과 형식이 다릅니다. 아래는 조회 명령과, 값을 읽을 때 봐야 하는 지점입니다.',
+          { type: 'code', label: 'SPF · DKIM · DMARC 조회', content: `# SPF — 루트 도메인의 TXT 중 v=spf1로 시작하는 항목
+dig example.com TXT +short | grep spf1
+# "v=spf1 include:_spf.google.com ~all"
+#                                  ^^^^ ~all(soft fail) / -all(hard fail)
+
+# DKIM — 선택자(selector)를 알아야 조회된다. 메일 서비스가 알려준 값을 쓴다
+dig google._domainkey.example.com TXT +short
+# "v=DKIM1; k=rsa; p=MIIBIjANBgkqh..."
+
+# DMARC — 반드시 _dmarc 서브도메인
+dig _dmarc.example.com TXT +short
+# "v=DMARC1; p=none; rua=mailto:report@example.com" ` },
+          'SPF에서 가장 흔한 사고는 TXT 레코드를 두 개 만드는 것입니다. v=spf1로 시작하는 TXT가 두 개 있으면 규격상 permerror가 되어 SPF 검사 자체가 실패합니다. 발신 서비스를 추가할 때는 새 레코드를 만들지 말고 기존 값의 include를 늘려야 합니다.',
+          'DMARC는 p=none으로 시작해 최소 2주간 rua 리포트를 받아본 뒤 quarantine, reject로 올립니다. 처음부터 p=reject로 두면 미처 SPF/DKIM을 등록하지 못한 발신 경로(예: 결제 알림, 뉴스레터 대행)의 메일이 조용히 사라집니다.',
+          { type: 'code', label: '단계적 강화 순서', content: `v=DMARC1; p=none;       rua=mailto:report@example.com   # 1) 2주 관찰
+v=DMARC1; p=quarantine; rua=mailto:report@example.com; pct=25   # 2) 25%만 적용
+v=DMARC1; p=quarantine; rua=mailto:report@example.com   # 3) 전량
+v=DMARC1; p=reject;     rua=mailto:report@example.com   # 4) 최종` },
+        ],
+      },
     ],
     checklist: [
       '현재 도메인의 SPF TXT 레코드가 하나만 존재한다.',
@@ -92,6 +116,7 @@ export const notes: CloudNote[] = [
     ],
     revisions: [
       { date: '2026-05-19', note: '최초 게시' },
+      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
     ],
   },
   {
@@ -100,7 +125,7 @@ export const notes: CloudNote[] = [
     description: '사진, 아이콘, 스크린샷처럼 성격이 다른 이미지를 어떤 포맷과 크기로 다뤄야 하는지 운영자 관점에서 정리합니다.',
     category: '성능',
     publishedAt: '2026-05-21',
-    reviewedAt: '2026-06-08',
+    reviewedAt: '2026-08-24',
     readingMinutes: 3,
     summary: '이미지는 작은 사이트의 페이지 용량 중 가장 큰 비중을 차지하는 경우가 많습니다. 포맷과 크기를 콘텐츠 성격에 맞게 정리하면 별도 도구 없이도 로딩 속도와 레이아웃 안정성을 함께 개선할 수 있습니다.',
     diagram: ['사진/아이콘 포맷 구분(WebP·SVG)', '표시 크기에 맞게 리사이즈', 'width/height·aspect-ratio 지정', '첫 화면 밖은 lazy loading'],
@@ -131,6 +156,32 @@ export const notes: CloudNote[] = [
           '글 하나에 너무 많은 이미지를 넣으면 각 이미지의 효과가 희석되고 페이지 전체 용량만 커집니다. 설명에 꼭 필요한 이미지만 선별하는 편이 읽는 속도와 로딩 속도 모두에 유리합니다.',
         ],
       },
+      {
+        heading: '형식 선택과 로딩 속성을 정리한다',
+        body: [
+          '이미지는 형식 선택보다 "언제 받을지"와 "자리를 미리 잡았는지"가 체감에 더 크게 영향을 줍니다.',
+          { type: 'code', label: '형식 대체와 로딩 속성', content: `<picture>
+  <source srcset="/img/hero.avif" type="image/avif">
+  <source srcset="/img/hero.webp" type="image/webp">
+  <img src="/img/hero.jpg" alt="설명"
+       width="1200" height="630"       <!-- CLS 방지: 반드시 명시 -->
+       loading="eager" fetchpriority="high"> <!-- 첫 화면 이미지 -->
+</picture>
+
+<!-- 첫 화면 아래 이미지는 반대로 -->
+<img src="/img/below.jpg" alt="설명" width="800" height="450"
+     loading="lazy" decoding="async">` },
+          'width와 height를 적어두면 브라우저가 이미지가 도착하기 전에 자리를 확보해 밀림이 생기지 않습니다. CSS로 크기를 조정하더라도 속성은 남겨 둡니다. 비율만 알려주는 용도이기 때문입니다.',
+          '첫 화면에 보이는 이미지에 loading="lazy"를 걸면 오히려 LCP가 나빠집니다. lazy는 화면 아래 이미지에만 쓰고, 첫 화면 대표 이미지에는 fetchpriority="high"를 주는 편이 낫습니다.',
+          { type: 'code', label: '화면 폭에 맞는 크기 내려주기', content: `<img src="/img/card-800.jpg"
+     srcset="/img/card-400.jpg 400w,
+             /img/card-800.jpg 800w,
+             /img/card-1600.jpg 1600w"
+     sizes="(max-width: 600px) 100vw, 800px"
+     width="800" height="450" alt="설명">` },
+          'srcset만 넣고 sizes를 빼면 브라우저가 화면 폭 전체를 기준으로 판단해 필요 이상으로 큰 파일을 받습니다. 두 속성은 항상 같이 씁니다.',
+        ],
+      },
     ],
     checklist: [
       '사진과 아이콘에 각각 적합한 이미지 포맷을 사용했다.',
@@ -145,6 +196,7 @@ export const notes: CloudNote[] = [
     ],
     revisions: [
       { date: '2026-05-21', note: '최초 게시' },
+      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
     ],
   },
   {
@@ -153,7 +205,7 @@ export const notes: CloudNote[] = [
     description: '외부 폰트를 불러올 때 텍스트가 늦게 보이거나 자리가 바뀌는 문제를 font-display와 대체 폰트로 줄이는 방법입니다.',
     category: '성능',
     publishedAt: '2026-05-23',
-    reviewedAt: '2026-07-14',
+    reviewedAt: '2026-08-24',
     readingMinutes: 2,
     summary: '본문이 많은 사이트에서는 폰트 로딩 방식이 체감 속도와 레이아웃 안정성에 직접 영향을 줍니다. 자주 받는 질문 세 가지로 정리했습니다.',
     diagram: ['font-display(swap/optional) 지정', '대체 폰트 스택 구성', '외부 CDN 요청 수 확인', 'CLS 재측정'],
@@ -177,6 +229,28 @@ export const notes: CloudNote[] = [
           '폰트가 늦게 도착해도 읽기에 문제가 없도록, 시스템 폰트로 구성된 대체 폰트 스택을 함께 지정해두는 것이 좋습니다. 대체 폰트와 지정 폰트의 글자 너비가 비슷할수록 교체 시 레이아웃 흔들림이 줄어듭니다.',
         ],
       },
+      {
+        heading: '폰트가 밀림을 만드는 지점',
+        body: [
+          '웹폰트로 생기는 밀림은 대체 폰트로 먼저 그린 뒤 웹폰트가 도착해 다시 그릴 때 글자 폭이 달라지면서 발생합니다. 설정 두 개로 대부분 잡힙니다.',
+          { type: 'code', label: 'font-display와 폴백 지표 맞추기', content: `@font-face {
+  font-family: 'Pretendard';
+  src: url('/fonts/Pretendard.woff2') format('woff2');
+  font-display: swap;      /* 대체 폰트로 먼저 그리고 도착하면 교체 */
+  /* 폴백과 글자 크기를 맞춰 교체 순간의 밀림을 줄인다 */
+  size-adjust: 100%;
+  ascent-override: 90%;
+  descent-override: 22%;
+}` },
+          'font-display 값은 트레이드오프가 분명합니다. swap은 글자가 바로 보이지만 교체 시 밀림이 생기고, optional은 밀림이 거의 없는 대신 느린 연결에서는 웹폰트가 아예 적용되지 않습니다. 본문 가독성이 중요하면 swap, 브랜드 일관성보다 안정성이 중요하면 optional 쪽입니다.',
+          { type: 'code', label: '중요한 폰트만 미리 받기', content: `<link rel="preload" as="font" type="font/woff2"
+      href="/fonts/Pretendard-Regular.woff2" crossorigin>
+
+<!-- 주의: preload는 우선순위를 뺏어오는 설정이다.
+     첫 화면에 실제로 쓰이는 한두 개만 지정한다. -->` },
+          'preload를 여러 개 걸면 정작 LCP 요소가 늦어집니다. 첫 화면에서 실제로 그려지는 굵기 하나만 preload하고, 나머지는 기본 로딩에 맡기는 편이 대체로 빠릅니다. crossorigin 속성을 빼면 폰트가 두 번 다운로드되므로 반드시 함께 씁니다.',
+        ],
+      },
     ],
     checklist: [
       '본문에 사용하는 폰트에 font-display 값을 지정했다.',
@@ -192,6 +266,7 @@ export const notes: CloudNote[] = [
     revisions: [
       { date: '2026-05-23', note: '최초 게시' },
       { date: '2026-07-14', note: '소제목을 Q&A 형식으로 전환' },
+      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
     ],
   },
   {
@@ -200,7 +275,7 @@ export const notes: CloudNote[] = [
     description: 'Content-Security-Policy, Referrer-Policy, Permissions-Policy 같은 보안 헤더를 정적 사이트에 점진적으로 적용하는 방법입니다.',
     category: '보안',
     publishedAt: '2026-05-26',
-    reviewedAt: '2026-06-10',
+    reviewedAt: '2026-08-24',
     readingMinutes: 3,
     summary: '보안 헤더는 큰 서비스만의 설정이 아닙니다. 정적 콘텐츠 사이트라도 몇 가지 헤더만 추가하면 스크립트 삽입이나 클릭재킹 같은 흔한 위험을 줄일 수 있습니다. 다만 한 번에 모두 적용하면 사이트가 깨질 수 있어 순서가 중요합니다.',
     diagram: ['CSP Report-Only로 시작', '허용 출처 목록 정리', '차단 모드로 전환', 'Referrer/Permissions-Policy 적용', '배포 후 응답 헤더 재확인'],
@@ -235,6 +310,32 @@ export const notes: CloudNote[] = [
           '헤더를 설정 파일에 추가했다고 끝나는 것이 아닙니다. 배포 후 브라우저 개발자 도구의 네트워크 탭에서 실제 응답 헤더를 열어, 의도한 값이 실제 도메인에도 적용됐는지 확인해야 합니다. CDN이나 호스팅 플랫폼이 일부 헤더를 자체적으로 추가하거나 덮어쓰는 경우도 있으므로, 로컬 설정과 실제 배포 결과를 함께 봐야 합니다.',
         ],
       },
+      {
+        heading: '설정과 검증을 같이 남긴다',
+        body: [
+          '보안 헤더는 넣는 것보다 "잘못 넣어 사이트를 깨뜨리지 않는 것"이 어렵습니다. 특히 CSP는 처음부터 강제하면 스크립트가 조용히 차단됩니다.',
+          { type: 'code', label: 'Next.js에서 응답 헤더 설정', content: `// next.config.ts
+async headers() {
+  return [{
+    source: '/:path*',
+    headers: [
+      { key: 'X-Content-Type-Options', value: 'nosniff' },
+      { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+      { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+      // 처음에는 Report-Only로 넣고 위반 로그만 본다
+      { key: 'Content-Security-Policy-Report-Only', value: CSP },
+    ],
+  }];
+}` },
+          'CSP는 반드시 Content-Security-Policy-Report-Only로 먼저 배포합니다. 이 상태에서는 차단하지 않고 콘솔에 위반만 기록하므로, 실제로 어떤 도메인이 필요한지 목록을 모을 수 있습니다. 광고나 분석 스크립트를 쓰는 사이트는 허용해야 할 도메인이 생각보다 많아서, 이 관찰 단계 없이 강제로 전환하면 기능이 사라집니다.',
+          { type: 'code', label: '적용 확인', content: `curl -sSI https://example.com | grep -iE 'x-content-type|referrer|permissions|content-security'
+
+# x-content-type-options: nosniff
+# referrer-policy: strict-origin-when-cross-origin
+# permissions-policy: camera=(), microphone=(), geolocation=()` },
+          'HSTS(Strict-Transport-Security)는 마지막에 붙입니다. max-age를 길게 준 뒤 HTTPS에 문제가 생기면 브라우저가 HTTP로 내려오는 것을 거부하기 때문에, 인증서 갱신이 안정적으로 돌아가는 것을 확인한 다음 짧은 max-age부터 시작하는 편이 안전합니다.',
+        ],
+      },
     ],
     checklist: [
       'CSP를 Report-Only 모드로 먼저 적용해 영향을 확인했다.',
@@ -250,6 +351,7 @@ export const notes: CloudNote[] = [
     ],
     revisions: [
       { date: '2026-05-26', note: '최초 게시' },
+      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
     ],
   },
   {
@@ -258,7 +360,7 @@ export const notes: CloudNote[] = [
     description: '존재하지 않는 페이지에 방문자가 도착했을 때 보여줄 화면과, 내부·외부 링크를 주기적으로 점검하는 방법을 정리합니다.',
     category: '배포',
     publishedAt: '2026-05-28',
-    reviewedAt: '2026-07-14',
+    reviewedAt: '2026-08-24',
     readingMinutes: 3,
     summary: '404 페이지는 실수의 흔적이 아니라 방문자가 다음 행동을 정할 수 있게 돕는 안내판입니다. 링크 점검을 배포 후 한 번이 아니라 주기적인 루틴으로 만들면 사이트 전체의 신뢰도가 천천히 올라갑니다.',
     sections: [
@@ -283,6 +385,39 @@ export const notes: CloudNote[] = [
           '정리하면 세 가지입니다. 404 페이지에 홈과 목록으로 가는 링크를 반드시 넣을 것, 존재하지 않는 경로를 전부 홈으로 리다이렉트하지 않을 것, 그리고 대표 글의 외부 출처 링크 상태를 주기적으로 점검할 것. 세 번째가 가장 지키기 어렵습니다. 링크가 깨졌다고 알려주는 알림이 따로 없기 때문에, 결국 사람이 주기를 정해두고 직접 열어보는 수밖에 없습니다.',
         ],
       },
+      {
+        heading: '깨진 링크를 찾는 방법',
+        body: [
+          '404는 사용자가 신고해 주지 않습니다. 배포 후 스스로 훑는 절차가 없으면 계속 남습니다.',
+          { type: 'code', label: '사이트맵 기준 상태 코드 일괄 확인', content: `# 사이트맵의 모든 URL 상태 코드를 확인한다
+curl -sS https://example.com/sitemap.xml \\
+  | grep -oE '<loc>[^<]+' | sed 's/<loc>//' \\
+  | while read -r u; do
+      code=$(curl -sS -o /dev/null -w '%{http_code}' "$u")
+      [ "$code" != "200" ] && echo "$code  $u"
+    done
+
+# 404  https://example.com/notes/deleted-post
+# 301  https://example.com/old-path` },
+          '사이트맵에 있는 주소가 404를 준다면 그건 검색엔진에 "여기 있다"고 알려놓고 없애 버린 상태입니다. 글을 지웠다면 사이트맵에서도 빼고, 대체할 글이 있다면 301로 보냅니다.',
+          { type: 'code', label: '없는 페이지에서 다음 행동을 준다', content: `// app/not-found.tsx
+export default function NotFound() {
+  return (
+    <main>
+      <h1>찾는 페이지가 없습니다</h1>
+      <p>주소가 바뀌었거나 글이 정리된 경우입니다.</p>
+      <ul>
+        <li><a href="/notes">전체 노트 목록</a></li>
+        <li><a href="/">홈으로</a></li>
+      </ul>
+    </main>
+  );
+}` },
+          '404 페이지가 상태 코드 200을 반환하는 실수가 흔합니다. 이 경우 검색엔진은 빈 페이지를 정상 문서로 받아들여 색인합니다. 배포 후 curl로 상태 코드를 한 번 확인해 둡니다.',
+          { type: 'code', label: '404가 진짜 404를 반환하는지', content: `curl -sS -o /dev/null -w '%{http_code}\\n' https://example.com/no-such-page
+# 404   <- 200이 나오면 soft 404 상태다` },
+        ],
+      },
     ],
     sources: [
       { title: 'MDN: 404 Not Found', url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/404' },
@@ -291,6 +426,7 @@ export const notes: CloudNote[] = [
     revisions: [
       { date: '2026-05-28', note: '최초 게시' },
       { date: '2026-07-14', note: '체크리스트 형식을 서술형으로 전환하고, 이 사이트의 실제 404 페이지 적용 사례를 추가' },
+      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
     ],
   },
   {
@@ -299,7 +435,7 @@ export const notes: CloudNote[] = [
     description: '복잡한 모니터링 도구 없이도 접속 로그와 상태 코드 비율로 작은 사이트의 이상 신호를 먼저 알아채는 방법입니다.',
     category: '운영',
     publishedAt: '2026-05-30',
-    reviewedAt: '2026-06-11',
+    reviewedAt: '2026-08-24',
     readingMinutes: 2,
     summary: '큰 장애는 보통 작은 신호가 쌓인 뒤에 드러납니다. 접속 로그나 기본 분석 도구의 상태 코드와 트래픽 추이를 평소에 한 번씩 보는 습관만으로도, 문제가 커지기 전에 알아챌 수 있는 경우가 많습니다.',
     diagram: ['평소 트래픽·상태코드 파악', '4xx/5xx/3xx 각각 다르게 확인', '사람 트래픽과 봇 트래픽 구분', '이상 패턴 기록'],
@@ -329,6 +465,26 @@ export const notes: CloudNote[] = [
           '검색엔진 크롤러, 모니터링 서비스, 광고 관련 봇은 정상적인 트래픽의 일부입니다. 갑작스러운 방문자 수 증가가 실제 독자 증가인지, 특정 봇의 반복 요청인지 구분하지 못하면 잘못된 결론을 내릴 수 있습니다. User-Agent나 요청 패턴을 함께 보면 두 트래픽을 구분하는 데 도움이 됩니다.',
         ],
       },
+      {
+        heading: '로그에서 실제로 뽑아보는 값',
+        body: [
+          '접근 로그는 양이 많아 그냥 열면 읽히지 않습니다. 목적을 정하고 집계해야 판단에 쓸 수 있습니다.',
+          { type: 'code', label: '가장 자주 보는 집계 네 가지', content: `# 1) 상태 코드 분포 — 4xx/5xx가 갑자기 늘었는지
+awk '{print $9}' access.log | sort | uniq -c | sort -rn
+
+# 2) 404가 나는 경로 상위 20개 — 깨진 링크 후보
+awk '$9==404 {print $7}' access.log | sort | uniq -c | sort -rn | head -20
+
+# 3) 요청이 많은 경로 상위 20개
+awk '{print $7}' access.log | sort | uniq -c | sort -rn | head -20
+
+# 4) 시간대별 요청 수 — 장애 시각 특정
+awk '{print substr($4, 2, 14)}' access.log | uniq -c` },
+          '404 집계는 깨진 링크를 찾는 가장 빠른 방법입니다. 다만 상위권 대부분은 wp-login.php처럼 존재한 적도 없는 경로를 찍는 자동 스캐너입니다. 내 사이트에 실제로 있었던 경로만 골라 봐야 의미가 있습니다.',
+          '5xx가 특정 시간대에 몰려 있으면 배포 시각과 대조합니다. 배포 직후 5분간만 몰렸다면 재시작 과정의 일시적 오류일 가능성이 크고, 계속 이어진다면 코드나 외부 의존 서비스 쪽입니다.',
+          '로그를 보기 전에 정해야 할 것은 "무엇을 확인하면 이 작업이 끝나는가"입니다. 그 문장이 없으면 로그를 오래 들여다보고도 결론 없이 끝납니다.',
+        ],
+      },
     ],
     checklist: [
       '평소의 방문자 수와 상태 코드 비율을 대략 알고 있다.',
@@ -343,6 +499,7 @@ export const notes: CloudNote[] = [
     ],
     revisions: [
       { date: '2026-05-30', note: '최초 게시' },
+      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
     ],
   },
   {
@@ -351,7 +508,7 @@ export const notes: CloudNote[] = [
     description: 'A, CNAME, TXT, MX 레코드를 수정하기 전 실제 운영자가 확인해야 할 기준과 되돌리는 방법을 정리합니다.',
     category: 'DNS',
     publishedAt: '2026-06-01',
-    reviewedAt: '2026-06-09',
+    reviewedAt: '2026-08-24',
     readingMinutes: 4,
     summary: '도메인 연결 문제는 대부분 배포 도구보다 DNS 변경 순서에서 시작됩니다. 이 글은 레코드를 고치기 전에 현재 상태를 기록하고, 변경 범위를 좁히고, 전파 시간을 기다리는 현실적인 절차를 다룹니다.',
     diagram: ['변경 전 레코드 스냅샷', 'A/CNAME/TXT/MX 역할 구분', 'TTL 고려해 일정 여유', '여러 DNS 조회 도구로 교차 확인'],
@@ -384,6 +541,30 @@ export const notes: CloudNote[] = [
           '문제가 생겼을 때는 “도메인이 안 된다”가 아니라 “루트 도메인의 A 레코드는 새 IP를 보지만 www CNAME은 예전 값을 본다”처럼 관찰한 사실을 분리해 적습니다. 이렇게 적어야 호스팅, DNS, 인증서 중 어느 층을 봐야 하는지 빠르게 결정할 수 있습니다.',
         ],
       },
+      {
+        heading: '직접 확인하는 명령과 읽는 법',
+        body: [
+          '앞의 절차를 실제로 수행할 때 쓰는 명령입니다. 브라우저 접속만으로는 내 PC 캐시와 실제 권한 서버의 응답을 구분할 수 없으므로, 권한 서버에 직접 묻는 조회를 함께 씁니다.',
+          { type: 'code', label: '변경 전 스냅샷과 변경 후 확인', content: `# 1) 현재 값 스냅샷 — 변경 전에 반드시 남긴다
+dig example.com A +noall +answer
+dig www.example.com CNAME +noall +answer
+dig example.com TXT +noall +answer
+dig example.com MX +noall +answer
+
+# 2) 캐시를 거치지 않고 권한 서버에 직접 묻는다
+dig @8.8.8.8 example.com A +short      # 구글 퍼블릭 DNS
+dig @1.1.1.1 example.com A +short      # Cloudflare 퍼블릭 DNS
+dig example.com NS +short              # 이 도메인의 권한 서버 확인
+dig @$(dig example.com NS +short | head -1) example.com A +short
+
+# 3) 남은 캐시 수명(TTL) 확인 — 두 번째 열이 초 단위 잔여 TTL
+dig example.com A +noall +answer
+# example.com.  3600  IN  A  203.0.113.10
+#               ^^^^ 이 값이 0이 될 때까지 예전 값이 남아 있을 수 있다` },
+          'TTL이 3600이면 최악의 경우 한 시간 동안 예전 값을 보는 해석기가 남습니다. 이전 작업을 예고할 수 있다면 최소 하루 전에 TTL을 300 정도로 낮춰두고, 이전이 끝난 뒤 원래 값으로 되돌리는 순서가 안전합니다. 작업 당일에 TTL만 낮추는 것은 이미 배포된 캐시에 소급 적용되지 않습니다.',
+          '여러 경로에서 값이 갈릴 때는 "도메인이 안 된다"가 아니라 "8.8.8.8은 새 IP, 권한 서버도 새 IP, 그런데 회사 네트워크만 예전 IP"처럼 관찰을 분리해 적습니다. 이렇게 적으면 남은 문제가 전파 대기인지 설정 오류인지 바로 갈립니다.',
+        ],
+      },
     ],
     checklist: [
       '변경 전 레코드 이름, 타입, 값, TTL을 기록했다.',
@@ -398,6 +579,7 @@ export const notes: CloudNote[] = [
     ],
     revisions: [
       { date: '2026-06-01', note: '최초 게시' },
+      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
     ],
   },
   {
@@ -406,7 +588,7 @@ export const notes: CloudNote[] = [
     description: '작은 정적 사이트를 배포하기 전 링크, 메타데이터, 404, robots, sitemap, 캐시를 확인하는 현실적인 순서입니다.',
     category: '배포',
     publishedAt: '2026-06-02',
-    reviewedAt: '2026-06-09',
+    reviewedAt: '2026-08-24',
     readingMinutes: 3,
     summary: '정적 사이트는 서버가 단순한 대신 작은 누락이 그대로 공개됩니다. 배포 직전 사람이 직접 확인해야 하는 항목을 운영자 관점으로 정리했습니다.',
     diagram: ['title/description 현재 주제와 일치 확인', 'sitemap엔 핵심 URL만', 'robots가 sitemap 위치 안내', '배포 후 실제 도메인 재확인'],
@@ -439,6 +621,34 @@ export const notes: CloudNote[] = [
           '확인 기록은 간단해도 됩니다. 배포한 커밋, 확인한 URL, 발견한 문제, 수정 여부만 남겨도 다음 배포 때 같은 실수를 줄일 수 있습니다. 작은 사이트일수록 이런 기록이 운영자의 신뢰도를 만듭니다.',
         ],
       },
+      {
+        heading: '배포 전에 실제로 돌리는 명령',
+        body: [
+          '체크리스트는 명령으로 바뀌었을 때 실제로 지켜집니다. 아래는 배포 직전에 순서대로 실행하는 형태입니다.',
+          { type: 'code', label: '배포 전 로컬 검증', content: `# 1) 프로덕션 빌드가 실제로 통과하는지 (개발 서버와 다르다)
+npm run build
+
+# 2) 빌드 결과물로 직접 띄워서 확인
+npm run start
+
+# 3) 린트 — 배포 파이프라인에서 막히기 전에
+npm run lint
+
+# 4) 환경변수: 이번 배포에서 추가/변경된 이름 목록
+git diff --name-only origin/main -- .env.example` },
+          { type: 'code', label: '배포 후 확인', content: `# 상태 코드와 캐시 헤더
+curl -sSI https://example.com | head -20
+
+# 로봇/사이트맵이 실제로 열리는지
+curl -sS https://example.com/robots.txt
+curl -sS -o /dev/null -w '%{http_code}\\n' https://example.com/sitemap.xml
+
+# 색인 상태 (브라우저에서)
+# site:example.com` },
+          '개발 서버에서만 확인하고 배포하는 것이 가장 흔한 사고 지점입니다. 개발 서버는 환경변수, 번들 최적화, 정적 생성 시점이 프로덕션과 달라서, 빌드에서만 드러나는 오류가 있습니다.',
+          '배포 후 확인 항목은 세 개면 충분합니다. 첫 화면이 200인가, 새 내용이 실제로 보이는가, robots.txt와 사이트맵이 열리는가. 이 셋이 통과하면 나머지는 급하지 않습니다.',
+        ],
+      },
     ],
     checklist: [
       '홈과 대표 글의 title, description이 현재 주제와 일치한다.',
@@ -453,6 +663,7 @@ export const notes: CloudNote[] = [
     ],
     revisions: [
       { date: '2026-06-02', note: '최초 게시' },
+      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
     ],
   },
   {
@@ -461,7 +672,7 @@ export const notes: CloudNote[] = [
     description: 'Cache-Control의 max-age, no-cache, no-store, stale-while-revalidate를 실제 사이트 운영 관점에서 설명합니다.',
     category: '캐시',
     publishedAt: '2026-06-03',
-    reviewedAt: '2026-06-10',
+    reviewedAt: '2026-08-24',
     readingMinutes: 3,
     summary: '캐시는 속도를 올리지만 잘못 쓰면 오래된 화면을 배포합니다. 헤더 이름을 외우기보다 어떤 리소스를 얼마나 믿고 재사용할지 결정하는 관점이 필요합니다.',
     diagram: ['리소스 성격별 캐시 정책 구분', 'no-cache vs no-store 구분', '정적 자산은 길게, HTML은 짧게', 's-maxage(CDN)와 max-age(브라우저) 분리'],
@@ -494,6 +705,26 @@ export const notes: CloudNote[] = [
           '캐시 정책은 성능 도구 점수만 보고 정하지 않습니다. 방문자가 오래된 정보를 봐도 되는지, 배포자가 캐시를 언제 무효화할 수 있는지, 문제가 생겼을 때 어떤 계층부터 지울지까지 함께 결정해야 합니다.',
         ],
       },
+      {
+        heading: '응답 헤더를 직접 확인한다',
+        body: [
+          '캐시 동작은 문서보다 실제 응답 헤더를 보는 쪽이 빠릅니다. 같은 URL이라도 첫 요청과 재요청의 헤더가 다르므로 두 번 확인합니다.',
+          { type: 'code', label: '응답 헤더 확인', content: `# 응답 헤더만 본다
+curl -sSI https://example.com/assets/app.a1b2c3.js
+
+# HTTP/2 200
+# cache-control: public, max-age=31536000, immutable
+# etag: "a1b2c3"
+# age: 842
+
+# HTML 문서는 정반대 설정이어야 한다
+curl -sSI https://example.com/
+# cache-control: public, max-age=0, must-revalidate` },
+          '해시가 파일명에 박힌 정적 자산은 내용이 바뀌면 이름이 바뀌므로 max-age를 1년으로 두고 immutable을 붙입니다. 반대로 HTML 문서는 주소가 그대로인 채 내용만 바뀌므로 max-age=0, must-revalidate로 매번 검증하게 둡니다. 이 둘을 반대로 걸면 배포해도 예전 화면이 계속 보이거나, 매 요청마다 번들을 다시 받게 됩니다.',
+          '자주 헷갈리는 지시자 세 개를 구분해 둡니다. no-cache는 저장은 하되 쓸 때마다 서버에 물어보라는 뜻이고, no-store는 아예 저장하지 말라는 뜻입니다. s-maxage는 CDN 같은 공유 캐시에만 적용되어 브라우저의 max-age와 다른 값을 줄 때 씁니다.',
+          'age 헤더가 0보다 크면 그 응답은 중간 캐시에서 나온 것입니다. 배포 직후 age가 계속 큰 값으로 나온다면 캐시가 아직 갱신되지 않은 것이므로, 코드를 다시 들여다보기 전에 캐시 무효화부터 확인하는 편이 낫습니다.',
+        ],
+      },
     ],
     checklist: [
       'no-cache와 no-store의 차이를 이해하고 적용했다.',
@@ -508,6 +739,7 @@ export const notes: CloudNote[] = [
     ],
     revisions: [
       { date: '2026-06-03', note: '최초 게시' },
+      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
     ],
   },
   {
@@ -516,7 +748,7 @@ export const notes: CloudNote[] = [
     description: 'CDN을 켰는데 수정이 안 보이거나 특정 경로만 오래된 화면을 보여주는 상황을 운영 관점에서 정리합니다.',
     category: 'CDN',
     publishedAt: '2026-06-04',
-    reviewedAt: '2026-06-10',
+    reviewedAt: '2026-08-24',
     readingMinutes: 3,
     summary: 'CDN은 느린 서버를 감추는 도구가 아니라 응답을 여러 위치에서 재사용하는 계층입니다. 작은 사이트에서 흔히 생기는 오해를 실제 점검 순서로 풀었습니다.',
     diagram: ['원본/CDN 어느 계층이 오래됐는지 분리', '전체 삭제보다 경로 단위 삭제', '쿼리 문자열·쿠키의 캐시 키 영향 확인', '개인화 응답은 공유 캐시 제외'],
@@ -549,6 +781,25 @@ export const notes: CloudNote[] = [
           '읽기 중심 콘텐츠 사이트에서는 과한 캐시 설정보다 안정적인 최신 문서 노출이 더 중요합니다. 특히 소개, 정책, 편집 기준 같은 신뢰 페이지는 변경 후 실제 도메인에서 바로 확인하는 습관을 들이는 것이 좋습니다.',
         ],
       },
+      {
+        heading: '캐시 적중 여부부터 확인한다',
+        body: [
+          'CDN 문제를 볼 때 가장 먼저 확인할 것은 "이 응답이 캐시에서 나왔는가"입니다. 대부분의 CDN이 전용 헤더로 알려줍니다.',
+          { type: 'code', label: '캐시 상태 헤더 확인', content: `curl -sSI https://example.com/assets/app.js | grep -iE 'cache|age|vary'
+
+# cf-cache-status: HIT      (Cloudflare)
+# x-vercel-cache: HIT       (Vercel)
+# x-cache: Hit from cloudfront   (CloudFront)
+# age: 1204
+# vary: Accept-Encoding
+
+# 캐시를 우회해 오리진 응답을 직접 본다
+curl -sSI 'https://example.com/assets/app.js?cachebust=1'` },
+          'MISS가 계속 나온다면 캐시가 안 되는 이유가 응답 쪽에 있습니다. Set-Cookie가 붙은 응답은 많은 CDN이 기본적으로 캐시하지 않고, Vary에 값이 많이 들어갈수록 캐시가 잘게 쪼개져 적중률이 떨어집니다. Vary: User-Agent를 무심코 넣으면 사실상 캐시가 없는 것과 같아집니다.',
+          '반대로 HIT이 계속 나오는데 내용이 예전 것이라면 무효화(purge)가 필요합니다. 이때 전체 purge를 습관적으로 돌리면 적중률이 한동안 바닥을 치므로, 바뀐 경로만 지정해 지우는 편이 낫습니다.',
+          '배포 후 확인 순서는 오리진 → CDN 순입니다. 캐시 우회 쿼리로 오리진이 새 내용을 주는지 먼저 보고, 그다음 CDN 헤더를 봅니다. 오리진이 이미 예전 내용을 준다면 그건 CDN 문제가 아니라 빌드나 배포 문제입니다.',
+        ],
+      },
     ],
     checklist: [
       '오래된 응답이 원본 서버인지 CDN인지 분리해서 확인했다.',
@@ -563,6 +814,7 @@ export const notes: CloudNote[] = [
     ],
     revisions: [
       { date: '2026-06-04', note: '최초 게시' },
+      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
     ],
   },
   {
@@ -571,7 +823,7 @@ export const notes: CloudNote[] = [
     description: 'LCP, INP, CLS를 점수 암기가 아니라 사용자가 느끼는 로딩, 반응, 안정성 문제로 해석합니다.',
     category: '성능',
     publishedAt: '2026-06-05',
-    reviewedAt: '2026-06-11',
+    reviewedAt: '2026-08-24',
     readingMinutes: 3,
     summary: '성능 점수는 목적이 아니라 증상 지도입니다. 작은 사이트 운영자가 Core Web Vitals를 읽고 개선 우선순위를 정하는 방법을 정리했습니다.',
     diagram: ['LCP·INP·CLS 중 원인 지표 구분', '실험실 점수와 현장 데이터 함께 보기', '이미지·폰트부터 우선 점검', '변경 전후 기록'],
@@ -604,6 +856,26 @@ export const notes: CloudNote[] = [
           '성능은 사용 경험의 일부입니다. 빠르고 안정적인 문서 사이트는 콘텐츠를 읽기 쉽게 만들고, 방문자가 글을 끝까지 읽기 전에 떠나는 비율을 줄입니다. 다만 성능만 좋고 콘텐츠가 얇으면 방문자가 머무를 이유 자체가 없으므로, 성능은 콘텐츠 품질을 받쳐주는 기반으로 봐야 합니다.',
         ],
       },
+      {
+        heading: '무엇으로 재고 어디까지 믿을지',
+        body: [
+          '지표는 측정 도구에 따라 값이 다르게 나옵니다. 실험실 측정과 실제 사용자 측정을 구분해서 봐야 판단이 흔들리지 않습니다.',
+          { type: 'code', label: '실제 사용자 값 수집', content: `// Next.js: app/web-vitals.tsx
+'use client';
+import { useReportWebVitals } from 'next/web-vitals';
+
+export function WebVitals() {
+  useReportWebVitals((metric) => {
+    // metric.name: 'LCP' | 'INP' | 'CLS' | 'TTFB' | 'FCP'
+    console.log(metric.name, Math.round(metric.value), metric.rating);
+  });
+  return null;
+}` },
+          'Lighthouse와 PageSpeed Insights의 점수는 한 번의 시뮬레이션 결과라 실행할 때마다 흔들립니다. 이 값으로 개선 여부를 판정하려면 최소 세 번 돌려 중앙값을 보고, 같은 네트워크·같은 기기 조건에서 비교해야 합니다. 반면 Search Console의 코어 웹 바이탈 보고서는 실제 방문자 데이터(CrUX)라 개선이 반영되기까지 최대 28일이 걸립니다. 배포 다음 날 보고서가 그대로라고 해서 개선이 실패한 것이 아닙니다.',
+          '세 지표는 원인이 서로 다릅니다. LCP는 가장 큰 요소가 늦게 그려지는 문제라 이미지·폰트·서버 응답을 봅니다. INP는 클릭 후 반응이 느린 문제라 긴 자바스크립트 작업을 봅니다. CLS는 화면이 밀리는 문제라 크기 없는 이미지와 늦게 로드되는 폰트를 봅니다. 한 지표가 나쁘다고 전부 손대면 무엇이 효과가 있었는지 알 수 없게 됩니다.',
+          '기준값은 LCP 2.5초, INP 200밀리초, CLS 0.1입니다. 이 값은 상위 75퍼센타일 기준이므로, 평균이 통과해도 느린 25퍼센트가 통과하지 못하면 보고서에서는 개선 필요로 나옵니다.',
+        ],
+      },
     ],
     checklist: [
       'LCP, INP, CLS 중 어떤 지표가 문제인지 구분했다.',
@@ -618,6 +890,7 @@ export const notes: CloudNote[] = [
     ],
     revisions: [
       { date: '2026-06-05', note: '최초 게시' },
+      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
     ],
   },
   {
@@ -626,7 +899,7 @@ export const notes: CloudNote[] = [
     description: 'http, https, www, 루트 도메인, canonical을 하나의 운영 흐름으로 정리합니다.',
     category: '도메인',
     publishedAt: '2026-06-06',
-    reviewedAt: '2026-06-11',
+    reviewedAt: '2026-08-24',
     readingMinutes: 3,
     summary: '도메인은 접속만 되면 끝이 아닙니다. 여러 주소가 같은 페이지를 가리킬 때 어떤 주소를 기준으로 삼을지 정해야 검색과 사용자 경험이 안정됩니다.',
     diagram: ['기준 주소 하나로 통일', '인증서 → 리다이렉트 → HSTS 순서 점검', 'canonical·sitemap·내부링크 일치', '리다이렉트 체인 최소화'],
@@ -659,6 +932,28 @@ export const notes: CloudNote[] = [
           '전면 개편 후에는 기존 주제의 URL이 새 사이트에 남지 않도록 하는 것이 중요합니다. 관련 없는 오래된 URL을 새 콘텐츠로 억지 연결하면 방문자 기대와 실제 페이지가 어긋납니다. 삭제된 주제는 404로 정리하거나, 명확한 새 홈으로 제한적으로 안내하는 편이 낫습니다.',
         ],
       },
+      {
+        heading: '리다이렉트 체인을 눈으로 따라간다',
+        body: [
+          '도메인 정규화는 "결국 열리니까 됐다"로 넘어가기 쉬운데, 검색엔진과 캐시는 중간 단계를 전부 봅니다. 체인을 직접 출력해 확인합니다.',
+          { type: 'code', label: '리다이렉트 경로 추적', content: `curl -sSIL http://example.com | grep -iE '^HTTP|^location'
+
+# HTTP/1.1 301 Moved Permanently
+# location: https://example.com/        <- http를 https로
+# HTTP/2 200
+
+# 네 가지 조합이 모두 한 번에 목적지로 가야 한다
+for u in http://example.com https://example.com \\
+         http://www.example.com https://www.example.com; do
+  echo "== $u"
+  curl -sSIL "$u" | grep -iE '^HTTP|^location'
+done` },
+          '피해야 할 것은 두 번 이상 튕기는 체인입니다. http://www → https://www → https:// 처럼 두 단계를 거치면 매 요청마다 왕복이 늘고, 일부 크롤러는 체인이 길면 중간에서 멈춥니다. 리다이렉트 규칙을 프로토콜과 호스트를 한 번에 처리하도록 합쳐 한 단계로 만드는 편이 좋습니다.',
+          '체인 정리가 끝나면 문서의 canonical 태그가 실제 최종 주소와 같은지 확인합니다. 리다이렉트는 https://example.com으로 보내는데 canonical은 https://www.example.com을 가리키면 서로 다른 신호를 주게 됩니다.',
+          { type: 'code', label: 'canonical 일치 확인', content: `curl -sS https://example.com | grep -i 'rel="canonical"'
+# <link rel="canonical" href="https://example.com/"/>` },
+        ],
+      },
     ],
     checklist: [
       '기준 주소를 https://cloudplare.com으로 정했다.',
@@ -673,6 +968,7 @@ export const notes: CloudNote[] = [
     ],
     revisions: [
       { date: '2026-06-06', note: '최초 게시' },
+      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
     ],
   },
   {
@@ -681,7 +977,7 @@ export const notes: CloudNote[] = [
     description: 'App Router 기반 작은 콘텐츠 사이트를 배포할 때 metadata, 정적 생성, 라우트 정리를 확인하는 메모입니다.',
     category: 'Next.js',
     publishedAt: '2026-06-07',
-    reviewedAt: '2026-06-12',
+    reviewedAt: '2026-08-24',
     readingMinutes: 3,
     summary: 'Next.js는 앱도 만들 수 있지만 작은 문서 사이트에도 잘 맞습니다. 다만 동적 기능을 줄이고 정적 페이지 품질을 관리해야 오래 안정적으로 운영할 수 있습니다.',
     diagram: ['가능한 페이지는 정적 생성', 'layout/개별 페이지 metadata 역할 분리', '삭제한 라우트 sitemap에서 제외', '빌드 결과·실도메인 재확인'],
@@ -714,6 +1010,33 @@ export const notes: CloudNote[] = [
           '배포 전에 빌드, lint, 키워드 검색을 같이 돌립니다. 사이트 주제를 바꾼 적이 있다면 이전 주제와 관련된 단어가 코드나 메타데이터에 남아 있는지 확인해야 합니다. 사람에게는 작은 문구 하나지만, 검색엔진에는 사이트 정체성이 섞인 신호로 읽힐 수 있습니다.',
         ],
       },
+      {
+        heading: '설정에서 자주 막히는 지점',
+        body: [
+          '작은 사이트에서 배포 후 문제가 되는 설정은 대체로 몇 개로 좁혀집니다.',
+          { type: 'code', label: '정적 생성과 동적 렌더링 구분', content: `// 기본은 정적 생성. 아래를 쓰면 요청마다 서버에서 렌더링된다
+export const dynamic = 'force-dynamic';
+
+// 일정 주기로 다시 생성 (초 단위)
+export const revalidate = 3600;
+
+// 동적 라우트를 빌드 시점에 미리 생성
+export async function generateStaticParams() {
+  return getAllNotes().map((note) => ({ slug: note.slug }));
+}` },
+          'generateStaticParams를 빠뜨리면 동적 라우트가 빌드 시점에 만들어지지 않아, 크롤러가 처음 방문할 때 빈 페이지를 볼 수 있습니다. 노트나 글 목록처럼 개수가 고정된 경로는 반드시 미리 생성합니다.',
+          { type: 'code', label: '메타데이터와 canonical', content: `export const metadata = {
+  metadataBase: new URL('https://example.com'),
+  alternates: { canonical: '/notes' },
+  openGraph: { url: '/notes', type: 'article' },
+};` },
+          'metadataBase를 지정하지 않으면 상대 경로로 쓴 canonical과 og:url이 절대 주소로 확장되지 않아 빌드 경고가 뜨고, 일부 크롤러가 값을 무시합니다. 도메인이 정해졌다면 가장 먼저 넣어 두는 설정입니다.',
+          { type: 'code', label: '배포 후 실제 HTML 확인', content: `# 자바스크립트 없이도 본문이 실려 있는지 확인한다
+curl -sS https://example.com/notes | grep -c '<article'
+
+# 0이 나오면 크롤러에게는 빈 페이지로 보이는 상태다` },
+        ],
+      },
     ],
     checklist: [
       '공개 콘텐츠 페이지가 정적으로 생성되는 구조인지 확인했다.',
@@ -728,6 +1051,7 @@ export const notes: CloudNote[] = [
     ],
     revisions: [
       { date: '2026-06-07', note: '최초 게시' },
+      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
     ],
   },
   {
@@ -736,7 +1060,7 @@ export const notes: CloudNote[] = [
     description: '접속 장애, 배포 실수, DNS 변경, 캐시 문제를 다음 운영에 도움이 되는 기록으로 남기는 방법입니다.',
     category: '운영',
     publishedAt: '2026-06-08',
-    reviewedAt: '2026-06-12',
+    reviewedAt: '2026-08-24',
     readingMinutes: 3,
     summary: '장애 기록은 큰 회사만 쓰는 문서가 아닙니다. 혼자 운영하는 작은 사이트도 짧은 기록이 쌓이면 같은 실수를 줄이고 사이트 품질을 높일 수 있습니다.',
     diagram: ['장애 시작~복구 시간순 기록', '영향 범위(URL·기기·지역) 분리', '가설과 실제 원인 구분', '다음 배포 전 개선 항목 하나 확정'],
@@ -769,6 +1093,28 @@ export const notes: CloudNote[] = [
           'CloudPlare의 콘텐츠도 이런 관점을 유지합니다. 완벽한 인프라 이론보다 작은 운영자가 실제로 다음 배포에서 덜 틀리게 만드는 기록이 더 가치 있습니다. 이런 목소리가 사이트의 독창성을 만듭니다.',
         ],
       },
+      {
+        heading: '기록 양식과 실제 예시',
+        body: [
+          '장애 기록은 형식이 정해져 있어야 나중에 검색됩니다. 항목을 고정해 두면 작성 시간도 줄어듭니다.',
+          { type: 'code', label: '기록 양식', content: `## 2026-06-14 이미지가 전부 깨져 보임
+
+- 증상: 목록 페이지의 썸네일만 전부 X 표시. 본문 이미지는 정상.
+- 영향: 목록 페이지 진입 사용자 전체. 기능 장애는 없음.
+- 발견: 배포 20분 뒤 직접 확인
+- 확인한 것:
+  - curl -sSI .../thumb.webp  -> 404
+  - 빌드 산출물에 thumb.webp 없음
+  - 원본 파일명이 thumb.WEBP (대문자)
+- 원인: 로컬은 대소문자 구분 없음, 배포 환경은 구분함
+- 조치: 파일명을 소문자로 통일하고 재배포
+- 재발 방지: 자산 파일명은 소문자·하이픈만 사용하도록 규칙화
+- 걸린 시간: 발견 20분 + 조치 15분` },
+          '가장 중요한 항목은 "확인한 것"입니다. 결론만 적어두면 다음에 비슷한 증상이 나왔을 때 같은 확인 과정을 처음부터 반복하게 됩니다. 반대로 확인 절차가 남아 있으면 두 번째부터는 몇 분 만에 끝납니다.',
+          '"걸린 시간"을 적는 이유는 어떤 문제에 재발 방지를 투자할지 고르기 위해서입니다. 30분짜리 문제가 다섯 번 반복됐다면 그건 자동화할 가치가 있는 문제입니다.',
+          '기록은 장애가 끝난 당일에 씁니다. 다음 날로 미루면 "확인한 것" 항목이 기억나지 않아 결국 결론만 남게 됩니다.',
+        ],
+      },
     ],
     checklist: [
       '장애 시작 시간과 복구 시간을 기록했다.',
@@ -783,6 +1129,7 @@ export const notes: CloudNote[] = [
     ],
     revisions: [
       { date: '2026-06-08', note: '최초 게시' },
+      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
     ],
   },
   {

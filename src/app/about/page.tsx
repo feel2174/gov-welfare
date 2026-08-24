@@ -56,7 +56,9 @@ export default function AboutPage() {
         <h2 style={h2}>어떤 서비스와 관련이 있나요?</h2>
         <p style={p}>
           이 사이트는 특정 클라우드 사업자, CDN 서비스, 보안 서비스의 공식 사이트가 아닙니다.
-          CloudPlare라는 이름은 독립 운영 노트의 브랜드명이며, 비슷한 이름의 외부 서비스와 제휴 관계가 없습니다.
+          CloudPlare는 개인이 운영하는 독립 노트의 이름이며, <strong>Cloudflare, Inc.</strong>를 비롯한 어떤 사업자와도
+          제휴, 후원, 승인 관계가 없습니다. Cloudflare는 Cloudflare, Inc.의 상표이고, 본문에서 해당 서비스를 언급할 때는
+          제품을 설명하기 위한 목적으로만 사용합니다.
         </p>
       </section>
 

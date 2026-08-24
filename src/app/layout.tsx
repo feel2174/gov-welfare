@@ -106,7 +106,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <p style={{ fontSize: '0.95rem', fontWeight: '700', color: 'var(--color-text)', marginBottom: '0.5rem' }}>{SITE_NAME} · {SITE_TAGLINE} · {AUTHOR_NAME} 운영</p>
             <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', lineHeight: '1.7', marginBottom: '0.8rem' }}>
               CloudPlare는 작은 웹사이트 운영자가 DNS, 배포, 캐시, 성능, 장애 대응을 차분히 점검할 수 있도록 작성한 독립 운영 노트입니다.
-              특정 클라우드 사업자나 CDN 서비스와 공식 제휴 관계가 없습니다.
+              특정 클라우드 사업자나 CDN 서비스와 공식 제휴 관계가 없으며, Cloudflare, Inc.와도 아무런 관련이 없습니다.
             </p>
             <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
               &copy; 2026 CloudPlare. All rights reserved.
