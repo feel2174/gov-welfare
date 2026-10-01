@@ -140,7 +140,6 @@ v=DMARC1; p=reject;     rua=mailto:report@example.com   # 4) 최종` },
     ],
     revisions: [
       { date: '2026-05-19', note: '최초 게시' },
-      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
       { date: '2026-09-03', note: 'Gmail 발신 정책 의무화 배경 및 FAQ 추가' },
     ],
   },
@@ -159,7 +158,7 @@ v=DMARC1; p=reject;     rua=mailto:report@example.com   # 4) 최종` },
         heading: '이미지 종류마다 맞는 포맷이 다르다',
         body: [
           '사진이나 화면을 캡처한 이미지는 WebP나 AVIF처럼 압축률이 높은 포맷이 적합합니다. 같은 화질에서 JPEG보다 파일 크기가 작아지는 경우가 많습니다. 반면 로고나 아이콘처럼 선이 분명한 그래픽은 SVG로 다루면 어떤 화면 크기에서도 흐려지지 않고 파일 크기도 작습니다.',
-          'AVIF는 WebP보다 약 20% 더 압축률이 우수하지만 인코딩 속도가 느립니다. 정적 사이트 빌드 시에는 WebP를 기본으로 하되, 히어로 이미지 등 핵심 자산에는 AVIF를 picture 태그로 함께 제공하는 것이 이상적입니다.',
+          'AVIF는 WebP보다 압축률이 더 높은 경우가 많지만 인코딩 속도가 느립니다. 정적 사이트 빌드 시에는 WebP를 기본으로 하되, 히어로 이미지 등 핵심 자산에는 AVIF를 picture 태그로 함께 제공하는 것이 이상적입니다.',
         ],
       },
       {
@@ -167,6 +166,22 @@ v=DMARC1; p=reject;     rua=mailto:report@example.com   # 4) 최종` },
         body: [
           '카메라나 디자인 도구에서 내보낸 원본 이미지는 실제 화면에 표시되는 크기보다 훨씬 큰 경우가 많습니다. 본문 폭이 720px 안팎인 사이트에 2000px 이상의 원본을 그대로 올리면, 방문자는 화면에 보이지도 않는 픽셀까지 모두 내려받게 됩니다. 업로드 전에 표시 크기에 맞춰 한 번 줄이는 작업만으로도 페이지 용량을 크게 줄일 수 있습니다.',
           '여러 화면 크기를 지원해야 한다면 srcset과 sizes 속성으로 화면 폭에 맞는 이미지를 브라우저가 선택하게 할 수 있습니다. 다만 작은 콘텐츠 사이트라면 본문 폭에 맞춘 이미지 한두 개를 잘 준비하는 것만으로도 충분한 경우가 많습니다.',
+        ],
+      },
+      {
+        heading: '직접 측정한 결과: 이미지 종류마다 줄어드는 폭이 다르다',
+        body: [
+          '같은 운영자가 만든 이미지 압축 도구 PixelZipKit(pixelzipkit.com)에서 고정 테스트 이미지로 잰 값입니다. WebP는 2026-06-22에 브라우저 Canvas 인코더로, JPEG는 2026-06-23에 macOS Image I/O 인코더로 변환했고, 사용자가 올린 파일은 쓰지 않았습니다.',
+          { type: 'code', label: 'PNG 원본을 변환했을 때 용량 (바이트)', content: `종류                        원본        결과       줄어든 폭
+사진 1536x1024 → WebP q80   2,901,456   214,980    92.6%
+사진 1536x1024 → WebP q70   2,901,456   168,144    94.2%
+사진 1536x1024 → WebP q60   2,901,456   148,680    94.9%
+스크린샷 → WebP q80            54,371    31,954    41.2%
+투명 배경 그래픽 → WebP q80     9,838     7,430    24.5%
+작업 공간 사진 → JPEG q80   3,481,104   577,779    83.4%
+작업 공간 사진 → JPEG q60   3,481,104   383,741    89.0%` },
+          '원본이 모두 PNG라서 사진의 감소폭이 크게 나온 것입니다. 이미 JPEG로 저장된 사진을 다시 변환하면 이 정도로 줄지 않습니다. 이 표는 변환 방식의 우열이 아니라 이미지 종류에 따라 얻는 이득이 크게 다르다는 점을 보여 줍니다.',
+          '같은 사진에서 품질을 80에서 60으로 낮추면 214,980바이트가 148,680바이트가 되어 30.8% 더 줄어듭니다. 반면 스크린샷과 투명 그래픽은 원래 작아서 줄어드는 폭도 24~41%에 그쳤습니다. 그래서 본문 사진은 q80을 기본으로 하고 모바일 중심 이미지에만 q70을 쓰며, 아이콘 같은 그래픽은 포맷을 바꾸기보다 SVG로 두는 쪽을 기준으로 삼았습니다.',
         ],
       },
       {
@@ -225,8 +240,8 @@ v=DMARC1; p=reject;     rua=mailto:report@example.com   # 4) 최종` },
     ],
     revisions: [
       { date: '2026-05-21', note: '최초 게시' },
-      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
       { date: '2026-09-03', note: 'AVIF 비교 분석 및 FAQ 추가' },
+      { date: '2026-10-01', note: 'PixelZipKit 실측 결과 표 추가, 근거 없던 AVIF 수치 삭제' },
     ],
   },
   {
@@ -295,7 +310,6 @@ v=DMARC1; p=reject;     rua=mailto:report@example.com   # 4) 최종` },
     ],
     revisions: [
       { date: '2026-05-23', note: '최초 게시' },
-      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
       { date: '2026-09-03', note: '서브셋 최적화 및 FAQ 보강' },
     ],
   },
@@ -374,7 +388,6 @@ const nextConfig = {
     ],
     revisions: [
       { date: '2026-05-26', note: '최초 게시' },
-      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
       { date: '2026-09-03', note: 'HSTS 주의사항 및 CSP 단계적 적용 FAQ 보강' },
     ],
   },
@@ -393,7 +406,7 @@ const nextConfig = {
         heading: '기본 404 화면을 방치하면 안 되는 이유',
         body: [
           '프레임워크나 웹 서버의 기본 404 페이지(예: Nginx 404 Not Found 흰 화면)는 방문자에게 사이트가 완전히 망가졌다는 인상을 줍니다.',
-          '헤더나 네비게이션이 없는 404 페이지에 도달한 방문자의 90% 이상은 뒤로 가기나 탭 닫기로 사이트를 이탈합니다. 사이트의 전체 레이아웃과 브랜드를 유지하면서 다른 유용한 글로 유도해야 합니다.',
+          '헤더나 네비게이션이 없는 404 페이지에 도달한 방문자는 갈 곳이 없어 뒤로 가기나 탭 닫기로 사이트를 떠나기 쉽습니다. 사이트의 전체 레이아웃과 브랜드를 유지하면서 다른 유용한 글로 이어 주는 편이 낫습니다.',
         ],
       },
       {
@@ -429,7 +442,7 @@ grep -B1 'broken link' broken-links.log` },
       },
       {
         question: '글의 URL을 바꿨을 때 404 대신 301 리다이렉트를 걸어야 하는 이유는 무엇인가요?',
-        answer: '기존 URL이 갖고 있던 외부 백링크와 검색엔진 인덱스 점수를 새 주소로 100% 승계하기 위해서입니다. 404로 방치하면 기존 유입 트래픽과 검색 순위를 모두 잃게 됩니다.',
+        answer: '같은 내용이 새 주소로 옮겨졌다면 301이 기존 링크와 검색 유입을 새 주소로 이어 주기 때문입니다. 반대로 내용이 사라졌다면 억지로 홈으로 301을 걸지 말고 404나 410으로 응답하는 편이 맞습니다.',
       },
     ],
     sources: [
@@ -438,8 +451,8 @@ grep -B1 'broken link' broken-links.log` },
     ],
     revisions: [
       { date: '2026-05-29', note: '최초 게시' },
-      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
       { date: '2026-09-03', note: 'Soft 404 위험성 및 FAQ 보강' },
+      { date: '2026-10-01', note: '출처 없던 이탈 비율과 301 설명을 바로잡음' },
     ],
   },
   {
@@ -508,7 +521,6 @@ cat access.log | awk -F'"' '{print $6}' | sort | uniq -c | sort -nr | head -n 10
     ],
     revisions: [
       { date: '2026-06-01', note: '최초 게시' },
-      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
       { date: '2026-09-03', note: '공격 패턴 차단(444) 실무 팁 및 FAQ 보강' },
     ],
   },
@@ -584,7 +596,6 @@ dig $DOMAIN NS +short >> dns-backup.txt` },
     ],
     revisions: [
       { date: '2026-06-03', note: '최초 게시' },
-      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
       { date: '2026-09-03', note: '루트 CNAME 제한(RFC 1912) 해설 및 FAQ 보강' },
     ],
   },
@@ -649,7 +660,6 @@ curl -s https://example.com/sitemap.xml | head -n 10` },
     ],
     revisions: [
       { date: '2026-06-05', note: '최초 게시' },
-      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
       { date: '2026-09-03', note: 'HTML 캐시 무효화 기준 및 FAQ 보강' },
     ],
   },
@@ -717,7 +727,6 @@ Cache-Control: public, max-age=86400, stale-while-revalidate=604800` },
     ],
     revisions: [
       { date: '2026-06-06', note: '최초 게시' },
-      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
       { date: '2026-09-03', note: 'stale-while-revalidate 상세 및 FAQ 보강' },
     ],
   },
@@ -781,7 +790,6 @@ Cache-Control: public, max-age=86400, stale-while-revalidate=604800` },
     ],
     revisions: [
       { date: '2026-06-07', note: '최초 게시' },
-      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
       { date: '2026-09-03', note: '선택적 캐시 퍼지 및 FAQ 보강' },
     ],
   },
@@ -842,7 +850,6 @@ Cache-Control: public, max-age=86400, stale-while-revalidate=604800` },
     ],
     revisions: [
       { date: '2026-06-08', note: '최초 게시' },
-      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
       { date: '2026-09-03', note: 'INP 신규 표준 기준 및 Lab/Field 데이터 차이점 보강' },
     ],
   },
@@ -913,7 +920,6 @@ server {
     ],
     revisions: [
       { date: '2026-06-08', note: '최초 게시' },
-      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
       { date: '2026-09-03', note: '리다이렉트 체인 위험성 및 FAQ 보강' },
     ],
   },
@@ -988,7 +994,6 @@ export const metadata = {
     ],
     revisions: [
       { date: '2026-06-07', note: '최초 게시' },
-      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
       { date: '2026-09-03', note: 'Next.js 15+ 메타데이터 주의점 및 FAQ 보강' },
     ],
   },
@@ -1047,7 +1052,6 @@ export const metadata = {
     ],
     revisions: [
       { date: '2026-06-08', note: '최초 게시' },
-      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
       { date: '2026-09-03', note: '5 Whys 실무 예시 및 무료 모니터링 FAQ 보강' },
     ],
   },
@@ -1108,7 +1112,6 @@ export const env = envSchema.parse(process.env);` },
     ],
     revisions: [
       { date: '2026-06-09', note: '최초 게시' },
-      { date: '2026-08-24', note: '확인 절차를 실제 명령과 출력 예시로 보강' },
       { date: '2026-09-03', note: 'Zod 환경변수 스키마 검증 및 FAQ 보강' },
     ],
   },
@@ -1475,6 +1478,118 @@ location / {
     ],
     revisions: [
       { date: '2026-09-03', note: '신규 작성 — Service Worker 캐시 충돌 디버깅 및 수명 주기 관리' },
+    ],
+  },
+  {
+    slug: 'retired-urls-410-cleanup',
+    title: '용도를 바꾼 도메인의 옛 URL을 410과 임시 sitemap으로 정리한 기록',
+    description: '복지 정보 사이트로 쓰던 도메인을 운영 노트로 바꾼 뒤 Search Console에 남은 404 72건을 어떻게 읽고 정리했는지 실제 수치와 함께 적었습니다.',
+    category: '운영',
+    publishedAt: '2026-10-01',
+    reviewedAt: '2026-10-01',
+    readingMinutes: 6,
+    summary: '사이트 코드를 바꿔도 검색엔진은 옛 주소를 기억합니다. 이 도메인에서 옛 복지 정보 경로가 어떻게 404, 500, 중복 판정으로 남았는지 확인하고, 410 응답과 임시 sitemap으로 정리한 과정을 적었습니다. 결과는 아직 나오지 않았고, 그 점도 그대로 적었습니다.',
+    diagram: ['Search Console 색인 현황 확인', 'git 이력에서 옛 URL 복원', '옛 경로를 410으로 응답', '임시 sitemap으로 재방문 유도'],
+    sections: [
+      {
+        heading: '무슨 일이 있었나',
+        body: [
+          '이 도메인은 2026년 3월 19일 첫 커밋 이후 정부 공공데이터를 가져와 보여 주는 복지 정보 사이트로 운영했습니다. 서비스 상세는 /service/[id], 정책은 /policy/[id], 가이드는 /guide/[id], 분류는 /category/[slug] 경로였습니다. 6월 12일에 사이트를 지금의 CloudPlare 운영 노트로 바꾸면서 해당 코드를 모두 지웠습니다.',
+          '코드는 지웠지만 구글은 주소를 계속 기억하고 있었습니다. 2026년 10월 1일 Search Console의 페이지 색인 현황은 다음과 같았습니다.',
+          { type: 'code', label: 'Search Console 색인 현황 (2026-10-01 확인)', content: `찾을 수 없음(404)                          72
+리디렉션이 포함된 페이지                    3
+서버 오류(5xx)                             1
+사용자가 선택한 표준이 없는 중복 페이지      1
+적절한 표준 태그가 포함된 대체 페이지        1
+발견됨 - 현재 색인이 생성되지 않음          14
+크롤링됨 - 현재 색인이 생성되지 않음         5
+
+색인된 페이지 약 10개, 검색 노출·클릭 0회` },
+          '새로 쓴 노트 16편보다 404 항목이 훨씬 많았습니다. 구글이 이 사이트를 처음 만난 모습이 지금 글보다 옛 주소 쪽에 더 가까웠다는 뜻입니다.',
+        ],
+      },
+      {
+        heading: '5xx와 중복 두 건은 모두 옛 경로였다',
+        body: [
+          '5xx로 잡힌 주소는 /category/상품리뷰?page=1 이었고, 표준 없는 중복으로 잡힌 주소는 /service/119200000110 이었습니다. 둘 다 사라진 복지 사이트 경로의 흔적입니다.',
+          '5xx가 왜 났는지는 확인하지 못했습니다. 당시 서버 로그를 남겨 두지 않았고, 지금은 그 경로가 404를 돌려주기 때문에 재현되지 않습니다. 원인을 모르는 채로, 같은 응답을 주는 경로를 하나로 통일하는 쪽으로 정리했습니다.',
+        ],
+      },
+      {
+        heading: '홈으로 301 하지 않고 410으로 응답했다',
+        body: [
+          '삭제된 페이지를 전부 홈이나 노트 목록으로 301 리다이렉트하는 방법도 있었습니다. 하지만 복지 정책 상세와 클라우드 운영 노트는 내용이 전혀 달라서, 구글이 이를 soft 404로 판단할 수 있다고 보고 쓰지 않았습니다. 같은 날 다른 사이트에서는 이 문제를 이미 겪었습니다(아래 섹션).',
+          '대신 옛 경로 접두어에 대해 410(Gone)을 돌려주도록 Next.js 16의 proxy.ts를 추가했습니다.',
+          { type: 'code', label: 'src/proxy.ts', content: `import { NextResponse } from 'next/server';
+
+export function proxy() {
+  return new NextResponse('이 페이지는 영구적으로 삭제되었습니다.', {
+    status: 410,
+    headers: {
+      'content-type': 'text/plain; charset=utf-8',
+      'x-robots-tag': 'noindex',
+    },
+  });
+}
+
+export const config = {
+  matcher: [
+    '/policy/:path*', '/service/:path*', '/guide/:path*',
+    '/category/:path*', '/search', '/income-check',
+    '/rejection-reasons', '/duplicate-support',
+    '/application-documents', '/api/:path*',
+  ],
+};` },
+          '로컬에서 빌드한 뒤 next start로 /service/119200000110, /category/상품리뷰?page=1, /policy/policy-child-1, /guide/k-pass-2026-guide, /api/services를 호출해 모두 410이 나오고 /, /notes, /about은 200이 나오는 것을 확인했습니다.',
+          '404와 410 중 무엇이 더 빨리 색인에서 빠지는지는 알 수 없습니다. 구글 문서는 429를 제외한 4xx를 같은 방식으로 처리한다고 설명합니다. 410을 고른 이유는 효과가 아니라, 서버가 의도적인 삭제라고 분명히 말해 두기 위해서입니다.',
+        ],
+      },
+      {
+        heading: '옛 주소를 임시 sitemap에 넣어 다시 보여 주기',
+        body: [
+          '구글이 옛 주소를 다시 방문해 410을 확인해야 정리가 끝납니다. 그래서 옛 주소만 모은 public/old-sitemap.xml을 만들고 robots.txt에 추가했습니다. Search Console에 직접 제출해도 되지만, robots.txt에 적어 두면 구글이 스스로 발견할 수 있습니다.',
+          '주소 목록은 git 이력에서 복원했습니다. 옛 데이터 파일에서 가이드 id 22개와 정책 id 100개가 나왔고, 최상위 옛 경로 7개와 Search Console에 찍힌 주소 2개를 합쳐 131개가 됐습니다. 서비스 상세는 외부 API에서 받아 오던 구조라 id가 저장소에 남아 있지 않았습니다. 그래서 이 경로는 확인된 주소 하나만 넣었고, 나머지는 410 응답으로 처리됩니다.',
+          '이 방법은 구글이 공식으로 권하는 절차가 아니라 이번에 선택한 방식입니다. 옛 주소가 색인에서 모두 빠지면 old-sitemap.xml과 robots.txt의 해당 줄을 지울 계획입니다.',
+        ],
+      },
+      {
+        heading: '같은 날 다른 사이트에서 찾은 같은 종류의 문제',
+        body: [
+          '같은 운영자의 다른 사이트(frontendnote.com)에서는 vercel.json에 233줄짜리 리다이렉트 규칙이 있었습니다. 삭제된 글이 홈으로 301 되거나, 존재하지 않는 경로에 빈 SPA 셸이 200으로 응답되고 있었습니다. 이 규칙과 catch-all rewrite를 모두 지우고 404.html을 추가했습니다. 모든 실제 경로가 프리렌더된 정적 파일이라 rewrite 없이도 동작하기 때문입니다.',
+          '그 사이트에서도 삭제된 옛 주소 83개를 담은 임시 sitemap을 만들어 robots.txt에 넣었습니다. 방법이 같은 이유는 문제가 같았기 때문입니다.',
+        ],
+      },
+      {
+        heading: '아직 모르는 것',
+        body: [
+          '이 글을 쓴 2026년 10월 1일 시점에는 효과를 확인할 수 없습니다. 구글이 옛 주소를 다시 방문해야 하고, 그 시점은 구글이 정합니다. 몇 주 뒤 Search Console에서 404 항목이 줄었는지, 색인된 페이지 수가 늘었는지 확인해 이 글에 적겠습니다. 줄지 않았다면 그것도 그대로 적겠습니다.',
+        ],
+      },
+    ],
+    checklist: [
+      '사이트 용도를 바꿨다면 Search Console의 페이지 색인 현황에서 404 항목 수를 먼저 확인한다.',
+      '옛 주소를 홈으로 한꺼번에 301 하지 않았다.',
+      '옛 경로가 404 또는 410을 돌려주는지 실제 응답 코드로 확인했다.',
+      '옛 주소 목록을 git 이력이나 옛 sitemap에서 복원했다.',
+      '임시 sitemap은 색인에서 빠지면 제거하도록 날짜와 함께 기록해 둔다.',
+    ],
+    faqs: [
+      {
+        question: '404와 410 중 무엇을 써야 하나요?',
+        answer: '구글 문서는 429를 제외한 4xx 응답을 같은 방식으로 처리한다고 설명하므로 색인 제거 속도는 크게 다르지 않다고 봐야 합니다. 의도적으로 영구 삭제한 경로라면 410이 그 사실을 서버가 분명히 알려 주는 쪽이고, 일시적으로 없는 페이지라면 404를 씁니다.',
+      },
+      {
+        question: '삭제된 페이지를 전부 홈으로 301 하면 안 되나요?',
+        answer: '내용이 이어지는 새 페이지가 있다면 그 페이지로 301 하는 것이 맞습니다. 내용과 무관한 홈으로 한꺼번에 보내면 구글이 soft 404로 판단할 수 있습니다. 이번에는 옛 복지 정보와 이어지는 새 페이지가 없어서 301을 쓰지 않았습니다.',
+      },
+    ],
+    sources: [
+      { title: 'Google Search Central: HTTP 상태 코드, 네트워크 오류, DNS 오류', url: 'https://developers.google.com/search/docs/crawling-indexing/http-network-errors' },
+      { title: 'Google Search Central: Soft 404 오류 수정', url: 'https://developers.google.com/search/docs/crawling-indexing/soft-404-errors' },
+      { title: 'Next.js Docs: proxy.js', url: 'https://nextjs.org/docs/app/api-reference/file-conventions/proxy' },
+    ],
+    revisions: [
+      { date: '2026-10-01', note: '최초 게시' },
     ],
   },
 ];
