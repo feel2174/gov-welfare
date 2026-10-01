@@ -24,6 +24,11 @@ export const metadata: Metadata = {
     title: 'CloudPlare - 클라우드 운영 노트',
     description: 'DNS, 배포, 캐시, 성능, 장애 기록을 작은 운영자 관점으로 정리합니다.',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'CloudPlare - 클라우드 운영 노트',
+    description: '작은 웹사이트 운영자를 위한 DNS, 배포, 캐시, 성능, 장애 대응 기록을 정리하는 독립 클라우드 운영 노트입니다.',
+  },
   verification: {
     other: {
       "naver-site-verification": ["af08f882eb6864711387eedb9eda95b25726d2ba"],
@@ -105,8 +110,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
             <p style={{ fontSize: '0.95rem', fontWeight: '700', color: 'var(--color-text)', marginBottom: '0.5rem' }}>{SITE_NAME} · {SITE_TAGLINE} · {AUTHOR_NAME} 운영</p>
             <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', lineHeight: '1.7', marginBottom: '0.8rem' }}>
-              CloudPlare는 작은 웹사이트 운영자가 DNS, 배포, 캐시, 성능, 장애 대응을 차분히 점검할 수 있도록 작성한 독립 운영 노트입니다.
-              특정 클라우드 사업자나 CDN 서비스와 공식 제휴 관계가 없으며, Cloudflare, Inc.와도 아무런 관련이 없습니다.
+              CloudPlare(Cloud Platform Record & Operations)는 작은 웹사이트 운영자가 DNS, 배포, 캐시, 성능, 장애 대응을 차분히 점검할 수 있도록 작성한 독립 기술 운영 노트입니다.
+              특정 클라우드 사업자나 CDN 서비스와 공식 제휴 관계가 없으며, Cloudflare, Inc.와도 아무런 관련이 없는 독립 프로젝트입니다.
             </p>
             <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
               &copy; 2026 CloudPlare. All rights reserved.

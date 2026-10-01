@@ -1,3 +1,5 @@
+import ChecklistInteractive from '@/components/ChecklistInteractive';
+
 export const metadata = {
   title: '배포 전 확인 체크리스트',
   description: '작은 웹사이트를 배포하기 전 DNS, 메타데이터, sitemap, 캐시, 실제 도메인을 확인하는 CloudPlare 체크리스트입니다.',
@@ -72,21 +74,13 @@ export default function ChecklistPage() {
         <p style={{ fontSize: '0.78rem', color: 'var(--color-primary)', fontWeight: 800, marginBottom: '0.35rem' }}>Release Checklist</p>
         <h1 style={{ fontSize: '1.55rem', fontWeight: 900, marginBottom: '0.55rem' }}>배포 전 확인 체크리스트</h1>
         <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.92rem', lineHeight: 1.75 }}>
-          이 체크리스트는 CloudPlare 노트를 실제 배포 전에 다시 확인할 수 있도록 압축한 것입니다.
-          작은 사이트일수록 배포 버튼보다 기준 주소, 메타데이터, 캐시, 오래된 URL 정리가 더 중요해지는 순간이 많습니다.
+          이 체크리스트는 CloudPlare 노트를 실제 배포 전에 하나씩 직접 확인하며 체크할 수 있도록 제작한 실무 점검 도구입니다.
+          브라우저를 닫아도 진행 상태가 유지되며, 완료도를 확인하고 안전하게 배포를 진행할 수 있습니다.
         </p>
       </header>
 
-      {sections.map((section) => (
-        <section key={section.title} style={{ marginBottom: '2rem' }}>
-          <h2 style={{ fontSize: '1.12rem', fontWeight: 900, marginBottom: '0.75rem' }}>{section.title}</h2>
-          <ul style={{ color: 'var(--color-text-secondary)', fontSize: '0.92rem', lineHeight: 1.85, paddingLeft: '1.1rem' }}>
-            {section.items.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </section>
-      ))}
+      <ChecklistInteractive sections={sections} />
+
 
       <section style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.5rem', marginTop: '0.5rem', marginBottom: '2rem' }}>
         <h2 style={{ fontSize: '1.12rem', fontWeight: 900, marginBottom: '0.75rem' }}>배포 당일 10분 점검 순서</h2>

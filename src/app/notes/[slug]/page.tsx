@@ -78,10 +78,27 @@ export default async function NotePage({ params }: NotePageProps) {
     ],
   };
 
+  const faqJsonLd = note.faqs && note.faqs.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: note.faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  } : null;
+
   return (
     <article style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)', padding: '2rem 1.5rem' }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      {faqJsonLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+      )}
+
       <nav aria-label="breadcrumb" style={{ marginBottom: '1.5rem', fontSize: '0.82rem', color: 'var(--color-text-muted)' }}>
         <Link href="/" style={{ color: 'var(--color-text-secondary)', fontWeight: 600 }}>홈</Link>
         <span style={{ margin: '0 0.4rem' }}>›</span>
@@ -96,7 +113,7 @@ export default async function NotePage({ params }: NotePageProps) {
         </span>
         <h1 style={{ fontSize: '1.55rem', lineHeight: 1.35, fontWeight: 950, marginBottom: '0.7rem', letterSpacing: 0 }}>{note.title}</h1>
         <p style={{ color: 'var(--color-text-muted)', fontSize: '0.82rem', marginBottom: '0.9rem' }}>
-          쓴 사람 {AUTHOR_NAME} · 최초 작성 {note.publishedAt} · 최종 검토 {note.reviewedAt} · {note.readingMinutes}분 읽기
+          작성자 {AUTHOR_NAME} · 최초 작성 {note.publishedAt} · 최종 검토 {note.reviewedAt} · {note.readingMinutes}분 읽기
         </p>
         <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', lineHeight: 1.75 }}>{note.summary}</p>
       </header>
@@ -127,19 +144,41 @@ export default async function NotePage({ params }: NotePageProps) {
         </section>
       )}
 
-      <aside style={{ backgroundColor: '#f8fafc', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '1rem 1.1rem', marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '0.95rem', fontWeight: 850, marginBottom: '0.55rem' }}>이 노트에서 확인할 것</h2>
-        <ol style={{ color: 'var(--color-text-secondary)', fontSize: '0.86rem', lineHeight: 1.75, paddingLeft: '1.2rem' }}>
-          {note.sections.map((section) => (
-            <li key={section.heading}>{section.heading}</li>
+      {/* Table of Contents (TOC) */}
+      <aside style={{ backgroundColor: '#f8fafc', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '1.2rem', marginBottom: '2rem' }}>
+        <h2 style={{ fontSize: '0.95rem', fontWeight: 850, marginBottom: '0.7rem', color: 'var(--color-text)' }}>목차 바로가기</h2>
+        <ol style={{ color: 'var(--color-text-secondary)', fontSize: '0.88rem', lineHeight: 1.85, paddingLeft: '1.2rem' }}>
+          {note.sections.map((section, idx) => (
+            <li key={section.heading}>
+              <a href={`#section-${idx}`} style={{ color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}>
+                {section.heading}
+              </a>
+            </li>
           ))}
+          {note.checklist && note.checklist.length > 0 && (
+            <li>
+              <a href="#section-checklist" style={{ color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}>
+                운영 체크리스트
+              </a>
+            </li>
+          )}
+          {note.faqs && note.faqs.length > 0 && (
+            <li>
+              <a href="#section-faqs" style={{ color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}>
+                자주 묻는 질문 (FAQ)
+              </a>
+            </li>
+          )}
         </ol>
       </aside>
 
+      {/* Main Sections */}
       <div>
-        {note.sections.map((section) => (
-          <section key={section.heading} style={{ marginBottom: '2rem' }}>
-            <h2 style={{ fontSize: '1.18rem', fontWeight: 900, marginBottom: '0.8rem', lineHeight: 1.45 }}>{section.heading}</h2>
+        {note.sections.map((section, idx) => (
+          <section key={section.heading} id={`section-${idx}`} style={{ marginBottom: '2.5rem', scrollMarginTop: '5rem' }}>
+            <h2 style={{ fontSize: '1.22rem', fontWeight: 900, marginBottom: '0.9rem', lineHeight: 1.45, color: 'var(--color-text)' }}>
+              {section.heading}
+            </h2>
             {section.body.map((item, i) =>
               typeof item === 'string' ? (
                 <p key={i} style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', lineHeight: 1.9, marginBottom: '0.85rem' }}>
@@ -175,15 +214,64 @@ export default async function NotePage({ params }: NotePageProps) {
       )}
 
       {note.checklist && note.checklist.length > 0 && (
-        <section style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.4rem', marginTop: '2.2rem' }}>
-          <h2 style={{ fontSize: '1.05rem', fontWeight: 900, marginBottom: '0.7rem' }}>운영 체크리스트</h2>
-          <ul style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', lineHeight: 1.85, paddingLeft: '1.1rem' }}>
+        <section id="section-checklist" style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.6rem', marginTop: '2.2rem', scrollMarginTop: '5rem' }}>
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 900, marginBottom: '0.8rem', color: 'var(--color-text)' }}>운영 체크리스트</h2>
+          <ul style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', lineHeight: 1.85, paddingLeft: '1.2rem' }}>
             {note.checklist.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
         </section>
       )}
+
+      {/* FAQ Section */}
+      {note.faqs && note.faqs.length > 0 && (
+        <section id="section-faqs" style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.6rem', marginTop: '2.2rem', scrollMarginTop: '5rem' }}>
+          <h2 style={{ fontSize: '1.15rem', fontWeight: 900, marginBottom: '1rem', color: 'var(--color-text)' }}>
+            자주 묻는 질문 (FAQ)
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {note.faqs.map((faq, idx) => (
+              <div
+                key={idx}
+                style={{
+                  backgroundColor: '#f8fafc',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: 'var(--radius-sm)',
+                  padding: '1.1rem 1.25rem',
+                }}
+              >
+                <h3 style={{ fontSize: '0.96rem', fontWeight: 850, color: 'var(--color-text)', marginBottom: '0.45rem' }}>
+                  Q. {faq.question}
+                </h3>
+                <p style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)', lineHeight: 1.75, margin: 0 }}>
+                  {faq.answer}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Author E-E-A-T Card */}
+      <section style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.6rem', marginTop: '2.2rem' }}>
+        <div style={{
+          backgroundColor: '#eff6ff',
+          border: '1px solid var(--color-border-hover)',
+          borderRadius: 'var(--radius-md)',
+          padding: '1.2rem 1.4rem',
+        }}>
+          <p style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--color-primary)', marginBottom: '0.25rem' }}>
+            WRITTEN BY OPERATOR
+          </p>
+          <h3 style={{ fontSize: '1rem', fontWeight: 900, color: 'var(--color-text)', marginBottom: '0.4rem' }}>
+            작성자: {AUTHOR_NAME}
+          </h3>
+          <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', lineHeight: 1.7, margin: 0 }}>
+            소규모 웹 서비스와 정적 사이트를 직접 구축하고 운영하는 엔지니어입니다. 실무에서 겪은 인프라 장애, DNS 이슈, 캐시 문제, 최적화 노하우를 바탕으로 실용적인 지침을 직접 검증하여 기록합니다.
+          </p>
+        </div>
+      </section>
 
       {relatedNotes.length > 0 && (
         <section style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.4rem', marginTop: '2rem' }}>
